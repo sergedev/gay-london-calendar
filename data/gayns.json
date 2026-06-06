@@ -1,0 +1,22 @@
+[
+  {
+    "id": "gayns-pride-party-2026",
+    "source": "gayns",
+    "title": "Gayns Pride Party",
+    "start": "2026-06-20T10:30:00+01:00",
+    "end": "2026-06-20T18:00:00+01:00",
+    "location": "Ministry of Sound",
+    "price": null,
+    "url": "https://www.instagram.com/p/DZDJgTsAnb1/?img_index=2",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/getgayns/",
+      "instagram": "https://www.instagram.com/getgayns/"
+    },
+    "description": "Gayns Pride special — early-doors party at Ministry of Sound. Details announced on Instagram.",
+    "soldOut": false,
+    "categories": ["pride", "social"],
+    "categoriesOverride": null
+  }
+]

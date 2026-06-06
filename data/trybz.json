@@ -1,0 +1,380 @@
+[
+  {
+    "id": "trybz-x-tai-chi-with-tomi-june",
+    "source": "trybz",
+    "title": "Tai Chi with Tomi",
+    "start": "2026-06-05T19:00:00+01:00",
+    "end": "2026-06-05T20:00:00+01:00",
+    "location": "London",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-tai-chi-with-tomi-june",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1772286845176_213493b8-a8c6-48e0-9164-109f6399319f_GV",
+    "soldOut": false,
+    "attendeeLimit": 16,
+    "attendees": 10
+  },
+  {
+    "id": "trybz-x-theweekending-joint-event-1779479797208",
+    "source": "trybz",
+    "title": "TheWeekending in Bethnal Green (Joint Event)",
+    "start": "2026-06-06T12:00:00+01:00",
+    "end": "2026-06-06T13:30:00+01:00",
+    "location": "Bethnal Green, London",
+    "price": "£14.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-theweekending-joint-event-1779479797208",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1769611160049_0e3f707c-4ac1-453e-99f6-c553a8f4bd1c_GV",
+    "soldOut": false,
+    "attendeeLimit": 12,
+    "attendees": 7
+  },
+  {
+    "id": "trybz-x-bodyrok-june",
+    "source": "trybz",
+    "title": "BODYROK Pilates - Pride Exclusive",
+    "start": "2026-06-07T14:00:00+01:00",
+    "end": "2026-06-07T15:00:00+01:00",
+    "location": "London",
+    "price": "£15.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-bodyrok-june",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779618906034_5ee8aa3f-d7b4-4381-bac4-dc0b67c3969d_GV",
+    "soldOut": false,
+    "attendeeLimit": 17,
+    "attendees": 17
+  },
+  {
+    "id": "trybz-x-pre-show-this-is-rambert",
+    "source": "trybz",
+    "title": "PRE-SHOW: This is Rambert",
+    "start": "2026-06-10T18:30:00+01:00",
+    "end": "2026-06-10T22:00:00+01:00",
+    "location": "London",
+    "price": "£44.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-pre-show-this-is-rambert",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779640710367_c93a078d-af1b-4fd3-8501-e2167e869583_GV",
+    "soldOut": false,
+    "attendeeLimit": 20,
+    "attendees": 6
+  },
+  {
+    "id": "trybz-x-angels-demons-with-amit-june",
+    "source": "trybz",
+    "title": "Angels & Demons with Amit",
+    "start": "2026-06-11T18:30:00+01:00",
+    "end": "2026-06-11T19:30:00+01:00",
+    "location": "London",
+    "price": "£12.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-angels-demons-with-amit-june",
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1769441570199_7d2cbcb3-fa90-4ce2-aeb1-9d55d5051778_GV",
+    "soldOut": false,
+    "attendeeLimit": 25,
+    "attendees": 11
+  },
+  {
+    "id": "trybz-x-hiit-with-jonny-trybz-exclusive-1780065219091",
+    "source": "trybz",
+    "title": "HIIT with Jonny",
+    "start": "2026-06-12T19:00:00+01:00",
+    "end": "2026-06-12T20:00:00+01:00",
+    "location": "London",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-hiit-with-jonny-trybz-exclusive-1780065219091",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1772309240545_d6c9ba50-4642-4eb4-8455-285dd6167d8b_GV",
+    "soldOut": false,
+    "attendeeLimit": 24,
+    "attendees": 8
+  },
+  {
+    "id": "trybz-x-camp-adventure-club-june",
+    "source": "trybz",
+    "title": "Camp Adventure Club",
+    "start": "2026-06-13T11:30:00+01:00",
+    "end": "2026-06-13T15:30:00+01:00",
+    "location": "London",
+    "price": "£12.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-camp-adventure-club-june",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780063584386_10dae1f7-5ffd-4086-a4d4-8dd96a5a5fed_GV",
+    "soldOut": false,
+    "attendeeLimit": 32,
+    "attendees": 28
+  },
+  {
+    "id": "trybz-x-revolt-cycling-holborn-mel-c-special-trybz-exclusive-1780065317921",
+    "source": "trybz",
+    "title": "Revolt Cycling Spin Class (Holborn) - Pride Special",
+    "start": "2026-06-14T11:00:00+01:00",
+    "end": "2026-06-14T12:00:00+01:00",
+    "location": "Holborn, London",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-revolt-cycling-holborn-mel-c-special-trybz-exclusive-1780065317921",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780065381325_0764600f-610a-4730-8233-13d14bdcc93d_GV",
+    "soldOut": false,
+    "attendeeLimit": 37,
+    "attendees": 11
+  },
+  {
+    "id": "trybz-x-gladiator-workout-june",
+    "source": "trybz",
+    "title": "Gladiator Workout at F45 Brixton (Joint Event)",
+    "start": "2026-06-17T19:30:00+01:00",
+    "end": "2026-06-17T20:30:00+01:00",
+    "location": "Brixton, London",
+    "price": "£13.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-gladiator-workout-june",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1766943239287_0512abbf-5b27-43be-ab96-3ef9441b3206_GV",
+    "soldOut": false,
+    "attendeeLimit": 10,
+    "attendees": 9
+  },
+  {
+    "id": "trybz-first-birthday",
+    "source": "trybz",
+    "title": "TRYBZ First Birthday Party",
+    "start": "2026-06-19T19:00:00+01:00",
+    "end": "2026-06-20T00:00:00+01:00",
+    "location": "The Ministry, 79-81 Borough Rd, SE1 1DN",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-first-birthday",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779024625309_e597bfa9-7f43-4f7a-9708-fc111f6dbbc9_GV",
+    "soldOut": false,
+    "attendeeLimit": 120,
+    "attendees": 97
+  },
+  {
+    "id": "trybz-x-rave-yoga-with-mike-trybz-exclusive-1780065629728",
+    "source": "trybz",
+    "title": "Rave Yoga with Mike",
+    "start": "2026-06-19T19:00:00+01:00",
+    "end": "2026-06-19T20:00:00+01:00",
+    "location": "London",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-rave-yoga-with-mike-trybz-exclusive-1780065629728",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1766942510145_3c26a4b0-ff2f-4433-b992-7bc53efe7d0a_GV",
+    "soldOut": false,
+    "attendeeLimit": 18,
+    "attendees": 3
+  },
+  {
+    "id": "kayak-the-grand-union-canal-june",
+    "source": "trybz",
+    "title": "Kayak the Grand Union Canal with Active360",
+    "start": "2026-06-21T11:00:00+01:00",
+    "end": "2026-06-21T13:00:00+01:00",
+    "location": "Grand Union Canal, London",
+    "price": "£30",
+    "url": "https://nas.com/trybz.london/events/kayak-the-grand-union-canal-june",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1761386000212_ab552f22-52e8-41c3-a0a8-570c5aea2ee6_GV",
+    "soldOut": false,
+    "attendeeLimit": 15,
+    "attendees": 14
+  },
+  {
+    "id": "trybz-x-theatre-with-matthew-west-end-live",
+    "source": "trybz",
+    "title": "Theatre Nights with Matthew: West End LIVE",
+    "start": "2026-06-21T11:30:00+01:00",
+    "end": "2026-06-21T15:00:00+01:00",
+    "location": "West End, London",
+    "price": "Free",
+    "url": "https://nas.com/trybz.london/events/trybz-x-theatre-with-matthew-west-end-live",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780061540352_822c3239-79bd-45cc-bdbe-073088322eab_GV",
+    "soldOut": false,
+    "attendeeLimit": 20,
+    "attendees": 12
+  },
+  {
+    "id": "trybz-x-barrys-bootcamp-soho-1780065365561",
+    "source": "trybz",
+    "title": "Barry's Bootcamp (Soho) - Pride Edition",
+    "start": "2026-06-23T19:15:00+01:00",
+    "end": "2026-06-23T20:15:00+01:00",
+    "location": "Soho, London",
+    "price": "£22.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-barrys-bootcamp-soho-1780065365561",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780065851886_5c707d7b-7a5f-4c77-91b6-08dda2487a35_GV",
+    "soldOut": false,
+    "attendeeLimit": 40,
+    "attendees": 31
+  },
+  {
+    "id": "trybz-x-theatre-nights-with-matthew-june26",
+    "source": "trybz",
+    "title": "Theatre Nights with Matthew",
+    "start": "2026-06-24T19:30:00+01:00",
+    "end": "2026-06-24T22:30:00+01:00",
+    "location": "London",
+    "price": "£54",
+    "url": "https://nas.com/trybz.london/events/trybz-x-theatre-nights-with-matthew-june26",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1775661051335_6a735347-0bd8-4cd9-aa45-7335e2f22e78_GV",
+    "soldOut": false,
+    "attendeeLimit": 11,
+    "attendees": 11
+  },
+  {
+    "id": "trybz-x-pilates-with-thomas-fleury-trybz-exclusive-1780066415766",
+    "source": "trybz",
+    "title": "Pilates with Thomas Fleury",
+    "start": "2026-06-26T19:00:00+01:00",
+    "end": "2026-06-26T20:00:00+01:00",
+    "location": "London",
+    "price": "£18.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-pilates-with-thomas-fleury-trybz-exclusive-1780066415766",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1770575310540_4930f4b9-9220-4e60-9b2e-60d25a82633a_GV",
+    "soldOut": false,
+    "attendeeLimit": 18,
+    "attendees": 10
+  },
+  {
+    "id": "trybz-x-gk-dance-beginners-class-trybz-exclusive-1780066486858",
+    "source": "trybz",
+    "title": "GK Dance - Beginners to Intermediate Class",
+    "start": "2026-06-27T10:00:00+01:00",
+    "end": "2026-06-27T11:30:00+01:00",
+    "location": "London",
+    "price": "£15.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-gk-dance-beginners-class-trybz-exclusive-1780066486858",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1764503802010_4eac7669-ba07-49ba-98f9-c285645d2425_GV",
+    "soldOut": false,
+    "attendeeLimit": 14,
+    "attendees": 2
+  },
+  {
+    "id": "trybz-peloton-pride-run",
+    "source": "trybz",
+    "title": "TRYBZ DASH x Peloton: 5KM Pride Run (Soho)",
+    "start": "2026-07-01T18:00:00+01:00",
+    "end": "2026-07-01T19:30:00+01:00",
+    "location": "Soho, London",
+    "price": "Free",
+    "url": "https://nas.com/trybz.london/events/trybz-peloton-pride-run",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780064663698_e73f73c8-2479-4285-bb6e-d4c5a34a3fb4_GV",
+    "soldOut": false,
+    "attendeeLimit": 50,
+    "attendees": 11
+  },
+  {
+    "id": "trybz-pride-london-2026",
+    "source": "trybz",
+    "title": "TRYBZ Official Pride London 2026",
+    "start": "2026-07-04T11:00:00+01:00",
+    "end": "2026-07-04T18:00:00+01:00",
+    "location": "Central London",
+    "price": "£9.75",
+    "url": "https://nas.com/trybz.london/events/trybz-pride-london-2026",
+    "categories": [
+      "pride"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779639872838_168db28f-1db7-436f-b5e2-d139094239b3_GV",
+    "soldOut": false,
+    "attendeeLimit": 75,
+    "attendees": 21
+  },
+  {
+    "id": "trybz-x-hotpod-yoga-elephant-castle-trybz-exclusive-1780066675570",
+    "source": "trybz",
+    "title": "Hotpod Yoga Elephant & Castle",
+    "start": "2026-07-05T12:30:00+01:00",
+    "end": "2026-07-05T13:30:00+01:00",
+    "location": "Elephant & Castle, London",
+    "price": "£17.50",
+    "url": "https://nas.com/trybz.london/events/trybz-x-hotpod-yoga-elephant-castle-trybz-exclusive-1780066675570",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1766265862462_8d790b6b-39ad-4170-bcd8-f3154f516eb2_GV",
+    "soldOut": false,
+    "attendeeLimit": 24,
+    "attendees": 2
+  },
+  {
+    "id": "trybz-x-theatre-nights-with-matthew-july26",
+    "source": "trybz",
+    "title": "Theatre Nights with Matthew",
+    "start": "2026-07-30T19:30:00+01:00",
+    "end": "2026-07-30T22:30:00+01:00",
+    "location": "London",
+    "price": "£72",
+    "url": "https://nas.com/trybz.london/events/trybz-x-theatre-nights-with-matthew-july26",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1777023102073_cd0e578f-7cdc-4d76-bb4c-c6178a23abaf_GV",
+    "soldOut": false,
+    "attendeeLimit": 11,
+    "attendees": 11
+  }
+]

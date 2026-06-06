@@ -1,0 +1,42 @@
+[
+  {
+    "id": "barks-and-boys-2026-06-28",
+    "source": "barks-and-boys",
+    "title": "Barks and Boys",
+    "start": "2026-06-28T15:00:00+01:00",
+    "end": "2026-06-28T19:00:00+01:00",
+    "location": "The Arzner, SE1",
+    "price": null,
+    "url": "https://www.instagram.com/p/DZGJUg4Ij6M/",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/barksandboys/",
+      "instagram": "https://www.instagram.com/barksandboys/"
+    },
+    "description": "LGBTQ+ social meetup for dog owners and dog lovers at The Arzner. Tickets required.",
+    "soldOut": false,
+    "categories": ["social"],
+    "categoriesOverride": null
+  },
+  {
+    "id": "barks-and-boys-2026-08-30",
+    "source": "barks-and-boys",
+    "title": "Barks and Boys",
+    "start": "2026-08-30T15:00:00+01:00",
+    "end": "2026-08-30T19:00:00+01:00",
+    "location": "The Arzner, SE1",
+    "price": null,
+    "url": "https://www.instagram.com/barksandboys/",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/barksandboys/",
+      "instagram": "https://www.instagram.com/barksandboys/"
+    },
+    "description": "LGBTQ+ social meetup for dog owners and dog lovers at The Arzner. Tickets required.",
+    "soldOut": false,
+    "categories": ["social"],
+    "categoriesOverride": null
+  }
+]

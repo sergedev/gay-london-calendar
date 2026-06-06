@@ -1,0 +1,323 @@
+[
+  {
+    "id": "monthly-mixer-at-the-cock-tavern",
+    "source": "big-gay-out",
+    "title": "Monthly Mixer at The Cock Tavern",
+    "start": "2026-05-07T18:30:00.000Z",
+    "end": "2026-05-07T22:30:00.000Z",
+    "location": "The Cock Tavern, Kennington",
+    "price": "Free",
+    "url": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1776869588273_bbb6fc65-0003-432e-9779-ab893350cdfc_GV",
+    "status": "confirmed",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern",
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "attendees": 48
+  },
+  {
+    "id": "monthly-mixer-at-the-cock-tavern--1776872680204",
+    "source": "big-gay-out",
+    "title": "June Mixer at The Cock Tavern",
+    "start": "2026-06-04T18:30:00.000Z",
+    "end": "2026-06-04T22:30:00.000Z",
+    "location": "The Cock Tavern, Kennington",
+    "price": "Free",
+    "url": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern--1776872680204",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1776869588273_bbb6fc65-0003-432e-9779-ab893350cdfc_GV",
+    "status": "confirmed",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern--1776872680204",
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "attendees": 51
+  },
+  {
+    "id": "riverside-hike-marlow-and-henley-on-thames-loop",
+    "source": "big-gay-out",
+    "title": "Riverside Hike: Marlow and Henley-On-Thames Loop",
+    "start": "2026-06-07T08:00:00.000Z",
+    "end": "2026-06-07T17:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/riverside-hike-marlow-and-henley-on-thames-loop",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1776095987703_f26ca53c-90cf-40d7-b57e-58b874f2e8cf_GV",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 24
+  },
+  {
+    "id": "aprons-only-handmade-pasta-workshop",
+    "source": "big-gay-out",
+    "title": "🍝 Aprons Only | Handmade Pasta Workshop 😉✨",
+    "start": "2026-06-10T16:45:00.000Z",
+    "end": "2026-06-10T20:30:00.000Z",
+    "location": "London",
+    "price": "£40",
+    "url": "https://nas.com/big-gay-out/events/aprons-only-handmade-pasta-workshop",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1778851347034_f9d29cc4-7e6b-4ac0-94ca-02a09ade23a9_GV",
+    "categories": [
+      "food"
+    ],
+    "categoriesOverride": null,
+    "soldOut": true,
+    "attendeeLimit": 11,
+    "attendees": 11
+  },
+  {
+    "id": "war-horse-at-the-national-theatre",
+    "source": "big-gay-out",
+    "title": "War Horse at The National Theatre",
+    "start": "2026-06-12T17:30:00.000Z",
+    "end": "2026-06-12T21:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£77",
+    "url": "https://nas.com/big-gay-out/events/war-horse-at-the-national-theatre",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1776012019094_18d370f8-d73b-47ee-b446-a686e89c8c9d_GV",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendeeLimit": 7,
+    "attendees": 7
+  },
+  {
+    "id": "wild-swimming-sauna-cold-dip",
+    "source": "big-gay-out",
+    "title": "Wild Swimming & Sauna + Cold Dip",
+    "start": "2026-06-21T07:00:00.000Z",
+    "end": "2026-06-21T14:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/wild-swimming-sauna-cold-dip",
+    "image": "https://images.unsplash.com/photo-1759357881776-498ded190a00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDc3ODF8MHwxfHNlYXJjaHwxM3x8V2lsZCUyMExha2UlMjBTd2ltbWluZ3xlbnwwfDB8fHwxNzc4ODUzMzI3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 17
+  },
+  {
+    "id": "may-monthly-bouldering-substation-brixton-1780474068239",
+    "source": "big-gay-out",
+    "title": "June Monthly Bouldering @ Substation, Brixton",
+    "start": "2026-06-21T13:30:00.000Z",
+    "end": "2026-06-21T17:30:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/may-monthly-bouldering-substation-brixton-1780474068239",
+    "image": "https://images.unsplash.com/photo-1696105538782-7815474f28e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDc3ODF8MHwxfHNlYXJjaHwzfHxib3VsZGVyaW5nfGVufDB8MHx8fDE3NzUyMzEzMTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 9
+  },
+  {
+    "id": "shalford-three-peaks-hike",
+    "source": "big-gay-out",
+    "title": "Shalford Three Peaks Hike (Surrey Hills)",
+    "start": "2026-06-27T08:30:00.000Z",
+    "end": "2026-06-27T18:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/shalford-three-peaks-hike",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1775828114543_1902dd74-b695-4677-9864-9b09475c08bd_GV",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 23
+  },
+  {
+    "id": "bgo-mixer-2026-07-projected",
+    "source": "big-gay-out",
+    "title": "Monthly Mixer at The Cock Tavern",
+    "start": "2026-07-02T19:30:00+01:00",
+    "end": "2026-07-02T23:30:00+01:00",
+    "location": "The Cock Tavern, Kennington",
+    "price": null,
+    "url": "https://nas.com/big-gay-out",
+    "status": "projected",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "grindr-the-opera-an-unauthorised-parody",
+    "source": "big-gay-out",
+    "title": "Grindr The Opera: An Unauthorised Parody",
+    "start": "2026-07-09T17:30:00.000Z",
+    "end": "2026-07-09T21:30:00.000Z",
+    "location": "Location TBC",
+    "price": "£45",
+    "url": "https://nas.com/big-gay-out/events/grindr-the-opera-an-unauthorised-parody",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780411015990_4b6eecac-4777-4a62-90eb-c279540ac575_GV",
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendeeLimit": 29,
+    "attendees": 11
+  },
+  {
+    "id": "the-annual-seven-sisters-cliffs-hike",
+    "source": "big-gay-out",
+    "title": "THE Annual Seven Sisters' Cliffs Hike",
+    "start": "2026-07-11T07:45:00.000Z",
+    "end": "2026-07-11T19:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/the-annual-seven-sisters-cliffs-hike",
+    "image": "https://images.unsplash.com/photo-1616964913831-5d22886c3392?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDc3ODF8MHwxfHNlYXJjaHw2fHxTZXZlbiUyMFNpc3RlcnMlMjBDbGlmZnN8ZW58MHwwfHx8MTc4MDQxMjI1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+    "categories": [
+      "outdoors"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendeeLimit": 50,
+    "attendees": 26
+  },
+  {
+    "id": "big-gay-picnic-in-regent-s-park",
+    "source": "big-gay-out",
+    "title": "☀️ Big Gay Picnic in Regent's Park ☀️",
+    "start": "2026-07-18T11:00:00.000Z",
+    "end": "2026-07-18T17:00:00.000Z",
+    "location": "Location TBC",
+    "price": "Free",
+    "url": "https://nas.com/big-gay-out/events/big-gay-picnic-in-regent-s-park",
+    "image": "https://images.unsplash.com/photo-1557226217-d7a55eacc3cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDc3ODF8MHwxfHNlYXJjaHwxOHx8UmVnZW50JTI3cyUyMFBhcmt8ZW58MHwwfHx8MTc4MDQ3NTc3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+    "categories": [
+      "outdoors",
+      "social"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 9
+  },
+  {
+    "id": "big-gay-beach-day-west-wittering",
+    "source": "big-gay-out",
+    "title": "🏖️ Big Gay Beach Day: West Wittering 🏖️",
+    "start": "2026-07-25T08:00:00.000Z",
+    "end": "2026-07-25T18:30:00.000Z",
+    "location": "Location TBC",
+    "price": "£5",
+    "url": "https://nas.com/big-gay-out/events/big-gay-beach-day-west-wittering",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780481758380_a4e23e8c-dcc2-4c4e-9ecd-d61ec06caf45_GV",
+    "categories": [
+      "outdoors",
+      "social"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 7
+  },
+  {
+    "id": "bgo-mixer-2026-08-projected",
+    "source": "big-gay-out",
+    "title": "Monthly Mixer at The Cock Tavern",
+    "start": "2026-08-06T19:30:00+01:00",
+    "end": "2026-08-06T23:30:00+01:00",
+    "location": "The Cock Tavern, Kennington",
+    "price": null,
+    "url": "https://nas.com/big-gay-out",
+    "status": "projected",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "bgo-mixer-2026-09-projected",
+    "source": "big-gay-out",
+    "title": "Monthly Mixer at The Cock Tavern",
+    "start": "2026-09-03T19:30:00+01:00",
+    "end": "2026-09-03T23:30:00+01:00",
+    "location": "The Cock Tavern, Kennington",
+    "price": null,
+    "url": "https://nas.com/big-gay-out",
+    "status": "projected",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "big-gay-tough-mudder-sept-2026",
+    "source": "big-gay-out",
+    "title": "Big Gay Tough Mudder Sept 2026",
+    "start": "2026-09-19T11:00:00.000Z",
+    "end": "2026-09-19T17:00:00.000Z",
+    "location": "Location TBC",
+    "price": "£85",
+    "url": "https://nas.com/big-gay-out/events/big-gay-tough-mudder-sept-2026",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1759491389979_10052656-f998-4d44-a8b8-d0333aeaa1fe_GV",
+    "categories": [
+      "fitness"
+    ],
+    "categoriesOverride": null,
+    "soldOut": false,
+    "attendees": 22
+  },
+  {
+    "id": "bgo-mixer-2026-10-projected",
+    "source": "big-gay-out",
+    "title": "Monthly Mixer at The Cock Tavern",
+    "start": "2026-10-01T19:30:00+01:00",
+    "end": "2026-10-01T23:30:00+01:00",
+    "location": "The Cock Tavern, Kennington",
+    "price": null,
+    "url": "https://nas.com/big-gay-out",
+    "status": "projected",
+    "recurrence": "first-thursday-monthly",
+    "links": {
+      "website": "https://nas.com/big-gay-out"
+    },
+    "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  }
+]

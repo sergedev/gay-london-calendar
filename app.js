@@ -1,0 +1,781 @@
+// Queer London — Calendar MVP
+// Vanilla JS, no build step.
+
+// ---------- Constants ----------
+const CATEGORIES = [
+  { id: 'fitness',  label: 'Fitness' },
+  { id: 'outdoors', label: 'Outdoors' },
+  { id: 'social',   label: 'Social' },
+  { id: 'arts',     label: 'Arts' },
+  { id: 'games',    label: 'Games' },
+  { id: 'food',     label: 'Food' },
+  { id: 'pride',    label: 'Pride' },
+  { id: 'festival', label: 'Festival' },
+];
+
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_AHEAD = 3;  // months rendered at once in month view
+
+// ---------- State ----------
+const STATE = {
+  view: 'auto',
+  month: startOfMonth(new Date()),
+  filters: { sources: new Set(), categories: new Set() },
+  events: [],
+  sources: {},
+  openEvent: null,
+};
+
+// ---------- Date helpers ----------
+function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function endOfMonth(d)   { return new Date(d.getFullYear(), d.getMonth()+1, 0); }
+function startOfDay(d)   { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function addMonths(d, n) { return new Date(d.getFullYear(), d.getMonth() + n, 1); }
+function addYears(d, n)  { return new Date(d.getFullYear() + n, 0, 1); }
+function isSameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function isSameMonth(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth(); }
+function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function fmtTime(d) {
+  const h = d.getHours();
+  const m = d.getMinutes();
+  const period = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${h12} ${period}` : `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+function fmtDayHeader(d) {
+  const today = startOfDay(new Date());
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+  if (isSameDay(d, today))    return `Today · ${DAY_LABELS[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}`;
+  if (isSameDay(d, tomorrow)) return `Tomorrow · ${DAY_LABELS[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}`;
+  return `${DAY_LABELS[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+}
+
+// ---------- Event helpers ----------
+function effectiveCategories(ev) {
+  return ev.categoriesOverride && ev.categoriesOverride.length ? ev.categoriesOverride : ev.categories || [];
+}
+function primaryCategory(ev) {
+  const cats = effectiveCategories(ev);
+  return cats[0] || 'default';
+}
+function passesFilters(ev) {
+  const f = STATE.filters;
+  if (f.sources.size > 0 && !f.sources.has(ev.source)) return false;
+  if (f.categories.size > 0) {
+    const cats = effectiveCategories(ev);
+    if (!cats.some(c => f.categories.has(c))) return false;
+  }
+  return true;
+}
+function eventsForDay(d) {
+  return STATE.events.filter(ev => isSameDay(new Date(ev.start), d) && passesFilters(ev))
+    .sort((a, b) => new Date(a.start) - new Date(b.start));
+}
+function eventsForMonth(monthStart) {
+  return STATE.events.filter(ev => isSameMonth(new Date(ev.start), monthStart) && passesFilters(ev))
+    .sort((a, b) => new Date(a.start) - new Date(b.start));
+}
+
+// ---------- Init ----------
+async function init() {
+  try {
+    const sources = await fetch('./data/sources.json').then(r => r.json());
+    STATE.sources = sources;
+    const perSource = await Promise.all(
+      Object.keys(sources).map(id =>
+        fetch(`./data/${id}.json`).then(r => r.ok ? r.json() : []).catch(() => [])
+      )
+    );
+    STATE.events = perSource.flat();
+  } catch (e) {
+    console.error('Failed to load data', e);
+    document.getElementById('app').innerHTML = `<div class="p-8 text-center text-red-600">Failed to load event data. Are you running this through a local server?</div>`;
+    return;
+  }
+  applyUrlState();
+  render();
+  window.addEventListener('resize', debounce(render, 150));
+  window.addEventListener('popstate', () => { applyUrlState(); render(); });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && STATE.openEvent) { STATE.openEvent = null; render(); }
+  });
+  // Global scroll listener: updates the sticky month indicator on month view
+  window.addEventListener('scroll', () => updateStickyMonthLabel(), { passive: true });
+}
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+// ---------- URL state ----------
+function applyUrlState() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('cat')) STATE.filters.categories = new Set(p.get('cat').split(',').filter(Boolean));
+  if (p.get('src')) STATE.filters.sources = new Set(p.get('src').split(',').filter(Boolean));
+  if (p.get('view')) STATE.view = p.get('view');
+  if (p.get('month')) {
+    const [y, m] = p.get('month').split('-').map(Number);
+    if (y && m) STATE.month = new Date(y, m-1, 1);
+  }
+}
+function pushUrlState() {
+  const p = new URLSearchParams();
+  if (STATE.filters.categories.size) p.set('cat', [...STATE.filters.categories].join(','));
+  if (STATE.filters.sources.size) p.set('src', [...STATE.filters.sources].join(','));
+  if (STATE.view !== 'auto') p.set('view', STATE.view);
+  p.set('month', `${STATE.month.getFullYear()}-${String(STATE.month.getMonth()+1).padStart(2,'0')}`);
+  history.replaceState(null, '', `?${p}`);
+}
+
+// ---------- Rendering ----------
+function effectiveView() {
+  if (STATE.view !== 'auto') return STATE.view;
+  return window.innerWidth >= 1024 ? 'month' : 'list';
+}
+
+function render() {
+  pushUrlState();
+  const isDesktop = window.innerWidth >= 1024;
+  const effView = effectiveView();
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${renderHeader(effView, isDesktop)}
+    ${renderFilterBar()}
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24">
+      ${effView === 'month' ? renderMonthsView()
+        : effView === 'year' ? renderYearGrid()
+        : renderList()}
+    </main>
+    ${STATE.openEvent ? renderEventDrawer(STATE.openEvent) : ''}
+  `;
+  attachHandlers();
+  if (effView === 'month') updateStickyMonthLabel();
+}
+
+function renderHeader(effView, isDesktop) {
+  const titleText = effView === 'year'
+    ? `${STATE.month.getFullYear()}`
+    : effView === 'month'
+      ? `${MONTHS[STATE.month.getMonth()].slice(0,3)}–${MONTHS[addMonths(STATE.month, MONTHS_AHEAD-1).getMonth()].slice(0,3)} ${STATE.month.getFullYear()}`
+      : `${MONTHS[STATE.month.getMonth()]} ${STATE.month.getFullYear()}`;
+  const prevLabel = effView === 'year' ? 'Previous year' : 'Previous month';
+  const nextLabel = effView === 'year' ? 'Next year' : 'Next month';
+  return `
+    <header id="app-header" class="sticky top-0 z-40 bg-white/90 day-header border-b border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-lg sm:text-xl font-semibold tracking-tight">Gay London Calendar</h1>
+          <p class="text-xs text-slate-500 -mt-0.5">Events from your favourite communities</p>
+        </div>
+        <button data-action="prev-period" class="px-2 py-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${prevLabel}" aria-label="${prevLabel}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 hover:bg-slate-50 whitespace-nowrap">
+          ${titleText}
+        </button>
+        <button data-action="next-period" class="px-2 py-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${nextLabel}" aria-label="${nextLabel}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        ${isDesktop ? `
+          <div class="ml-2 flex rounded-lg border border-slate-200 p-0.5 bg-white">
+            <button data-action="view-list"  class="px-3 py-1 text-sm rounded-md ${effView==='list'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">List</button>
+            <button data-action="view-month" class="px-3 py-1 text-sm rounded-md ${effView==='month' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Month</button>
+            <button data-action="view-year"  class="px-3 py-1 text-sm rounded-md ${effView==='year'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Year</button>
+          </div>
+        ` : `
+          <div class="ml-1 flex rounded-lg border border-slate-200 p-0.5 bg-white">
+            <button data-action="view-list" class="px-2 py-1 text-xs rounded-md ${effView==='list' ? 'bg-slate-900 text-white' : 'text-slate-600'}">List</button>
+            <button data-action="view-year" class="px-2 py-1 text-xs rounded-md ${effView==='year' ? 'bg-slate-900 text-white' : 'text-slate-600'}">Year</button>
+          </div>
+        `}
+      </div>
+    </header>
+  `;
+}
+
+function renderFilterBar() {
+  const f = STATE.filters;
+  const sourceIds = Object.keys(STATE.sources);
+  const anySource = sourceIds.length > 1;
+  const activeCount = f.categories.size + f.sources.size;
+
+  return `
+    <div id="filter-bar" class="sticky top-[57px] sm:top-[63px] z-30 bg-slate-50/90 day-header border-b border-slate-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5">
+        <div class="filter-row flex flex-wrap gap-2">
+          ${CATEGORIES.map(c => {
+            const active = f.categories.has(c.id);
+            return `
+              <button data-action="toggle-cat" data-cat="${c.id}"
+                class="cat-${c.id} flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition
+                  ${active
+                    ? 'cat-chip ring-2 ring-offset-1 ring-[color:var(--c)]'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                <span class="w-2 h-2 rounded-full cat-stripe"></span>
+                ${c.label}
+              </button>
+            `;
+          }).join('')}
+          ${anySource ? sourceIds.map(sid => {
+            const src = STATE.sources[sid];
+            const active = f.sources.has(sid);
+            return `
+              <button data-action="toggle-src" data-src="${sid}"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition
+                  ${active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'}">
+                ${renderSourceAvatar(sid, 14)}
+                ${escapeHtml(src.shortName || src.name)}
+              </button>
+            `;
+          }).join('') : ''}
+          ${activeCount > 0 ? `
+            <button data-action="clear-filters" class="px-3 py-1.5 rounded-full text-sm text-slate-500 hover:text-slate-900 whitespace-nowrap">
+              Clear filters
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- List view ----------
+function renderList() {
+  const monthEvents = eventsForMonth(STATE.month);
+  if (!monthEvents.length) {
+    return `
+      <div class="text-center py-16 text-slate-500">
+        <p class="text-base">No events match your filters this month.</p>
+        <button data-action="clear-filters" class="mt-3 text-sm text-slate-900 underline">Clear filters</button>
+      </div>
+    `;
+  }
+  const byDay = new Map();
+  for (const ev of monthEvents) {
+    const k = dateKey(new Date(ev.start));
+    if (!byDay.has(k)) byDay.set(k, []);
+    byDay.get(k).push(ev);
+  }
+  const days = [...byDay.keys()].sort();
+  const today = new Date();
+  return `
+    <div class="space-y-6">
+      ${days.map(k => {
+        const [y, m, d] = k.split('-').map(Number);
+        const date = new Date(y, m-1, d);
+        const isToday = isSameDay(date, today);
+        const isPast = startOfDay(date) < startOfDay(today);
+        return `
+          <section>
+            <h2 class="sticky top-[105px] sm:top-[111px] z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-1.5 bg-slate-50/95 day-header text-xs font-semibold uppercase tracking-wider flex items-center gap-2
+              ${isToday ? 'text-slate-900' : (isPast ? 'text-slate-400' : 'text-slate-500')}">
+              ${isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-slate-900"></span>' : ''}
+              ${fmtDayHeader(date)}
+            </h2>
+            <div class="mt-2 space-y-1 ${isPast && !isToday ? 'opacity-50 saturate-50' : ''}">
+              ${byDay.get(k).map(renderListCard).join('')}
+            </div>
+          </section>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderListCard(ev) {
+  const start = new Date(ev.start);
+  const cats = effectiveCategories(ev);
+  const src = STATE.sources[ev.source];
+  const loc = displayLocation(ev.location);
+  const free = isFreeEvent(ev);
+  const projected = isProjected(ev);
+  const soldOut = isSoldOut(ev);
+  const wrapClass = projected
+    ? 'w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4 border border-dashed border-slate-300'
+    : 'w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4';
+  const priceChunk = projected
+    ? '<span class="text-slate-300">·</span><span class="text-slate-500 font-bold tracking-wide">TBC</span>'
+    : soldOut
+    ? '<span class="text-slate-300">·</span><span class="ml-1 text-rose-600 font-bold tracking-wide">SOLD OUT</span>'
+    : (ev.price ? (free
+        ? '<span class="ml-1 text-emerald-600 font-bold tracking-wide">FREE</span>'
+        : `<span class="text-slate-300">·</span><span class="text-slate-500 font-medium">${escapeHtml(ev.price)}</span>`) : '');
+  const titleClass = projected ? 'italic text-slate-600' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
+  return `
+    <button data-action="open-event" data-id="${ev.id}"
+      class="${wrapClass}">
+      <div class="flex items-center gap-2 text-xs">
+        ${renderSourceAvatar(ev.source, 18)}
+        <span class="font-semibold" style="color:${src?.color || '#475569'}">${escapeHtml(src?.shortName || ev.source)}</span>
+        <span class="text-slate-300">·</span>
+        <span class="font-semibold ${projected ? 'text-slate-500' : 'text-slate-900'}">${fmtTime(start)}</span>
+        ${priceChunk}
+      </div>
+      <div class="mt-1.5 ${titleClass} leading-snug line-clamp-2">${escapeHtml(ev.title)}</div>
+      ${loc ? `
+        <div class="mt-1 flex items-center gap-1 text-sm text-slate-500">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="truncate">${escapeHtml(loc)}</span>
+        </div>
+      ` : ''}
+      ${cats.length ? `
+        <div class="mt-2 flex flex-wrap gap-1">
+          ${cats.map(c => `<span class="cat-${c} cat-chip text-[10.5px] px-2 py-0.5 rounded-full font-medium capitalize">${c}</span>`).join('')}
+        </div>
+      ` : ''}
+    </button>
+  `;
+}
+
+// ---------- Month view: ONE continuous grid spanning N months ----------
+function renderMonthsView() {
+  const startMonth = STATE.month;
+  const endMonth = addMonths(startMonth, MONTHS_AHEAD - 1);
+  const lastDay = endOfMonth(endMonth);
+
+  // Extend backwards to the Monday of startMonth's first week
+  // and forwards to the Sunday of endMonth's last week
+  const leadingPad = (startMonth.getDay() + 6) % 7;
+  const trailingPad = 6 - ((lastDay.getDay() + 6) % 7);
+  const gridStart = new Date(startMonth); gridStart.setDate(gridStart.getDate() - leadingPad);
+  const gridEnd = new Date(lastDay); gridEnd.setDate(gridEnd.getDate() + trailingPad);
+
+  const cells = [];
+  let d = new Date(gridStart);
+  while (d <= gridEnd) {
+    cells.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+
+  const today = new Date();
+  const earliestMonth = startMonth;
+  return `
+    <div class="bg-white rounded-2xl border border-slate-200">
+      <div class="month-sticky sticky top-[105px] sm:top-[111px] z-20 bg-white border-b border-slate-200 rounded-t-2xl">
+        <div class="px-4 sm:px-5 py-2.5">
+          <span id="cur-month" class="text-xl font-bold tracking-tight text-slate-900" data-default="${MONTHS[earliestMonth.getMonth()]} ${earliestMonth.getFullYear()}">${MONTHS[earliestMonth.getMonth()]} ${earliestMonth.getFullYear()}</span>
+        </div>
+        <div class="grid grid-cols-7 border-t border-slate-100 bg-slate-50">
+          ${DAY_LABELS.map(l => `<div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">${l}</div>`).join('')}
+        </div>
+      </div>
+      <div class="grid grid-cols-7 rounded-b-2xl overflow-hidden" id="cells-grid">
+        ${cells.map((d, i) => renderCalCell(d, today, startMonth, endMonth, i)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCalCell(d, today, startMonth, endMonth, i) {
+  const monthEndDay = endOfMonth(endMonth);
+  const beforeRange = d < startMonth;
+  const afterRange = d > monthEndDay;
+  const isOutsideRange = beforeRange || afterRange;
+  const isToday = isSameDay(d, today);
+  const isPast = startOfDay(d) < startOfDay(today);
+  const isFirstOfMonth = d.getDate() === 1;
+  const events = eventsForDay(d);
+  const visible = events.slice(0, 6);
+  const overflow = events.length - visible.length;
+  const isLastCol = (i % 7) === 6;
+
+  // Subtle month separator: darken the 1px border on edges that touch a
+  // different-month neighbor. Combined across cells, this naturally produces
+  // an L-shaped step between months without any cell having a thick border.
+  const dRight = new Date(d); dRight.setDate(d.getDate() + 1);
+  const dBelow = new Date(d); dBelow.setDate(d.getDate() + 7);
+  const rightDifferentMonth = !isLastCol && (dRight.getMonth() !== d.getMonth() || dRight.getFullYear() !== d.getFullYear());
+  const belowDifferentMonth = (dBelow.getMonth() !== d.getMonth() || dBelow.getFullYear() !== d.getFullYear());
+  const SEP_COLOR = '#334155'; // slate-700 — close to black but not harsh
+  let sepStyle = '';
+  if (rightDifferentMonth) sepStyle += `border-right-color: ${SEP_COLOR};`;
+  if (belowDifferentMonth) sepStyle += `border-bottom-color: ${SEP_COLOR};`;
+
+  const cellBg = isToday ? 'bg-slate-50'
+    : isOutsideRange ? 'bg-slate-50/40'
+    : (isPast) ? 'bg-slate-100/60'
+    : '';
+  const cellRing = isToday ? 'ring-2 ring-inset ring-slate-900 relative z-10' : '';
+
+  const dayNumStyle = isToday
+    ? 'bg-slate-900 text-white px-2.5 py-0.5 rounded-lg text-[26px] font-extrabold leading-none tracking-tight'
+    : isOutsideRange ? 'text-slate-300 text-[26px] font-extrabold leading-none tracking-tight'
+    : isPast ? 'text-slate-400 text-[26px] font-extrabold leading-none tracking-tight'
+    : 'text-slate-900 text-[26px] font-extrabold leading-none tracking-tight';
+
+  const eventsDimmed = (isPast && !isToday) ? 'opacity-50 saturate-50' : '';
+  const monthLabel = isFirstOfMonth
+    ? `<span class="text-[20px] font-bold uppercase tracking-wider ${isOutsideRange ? 'text-slate-300' : 'text-slate-900'} mr-1">${MONTHS[d.getMonth()].slice(0,3)}</span>`
+    : '';
+
+  return `
+    <div data-day="${dateKey(d)}" data-month-key="${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}"
+      class="min-h-[150px] border-r border-b border-slate-100 p-2 flex flex-col gap-1.5 ${cellBg} ${cellRing} ${isLastCol ? 'border-r-0' : ''}"
+      style="${sepStyle}">
+      <div class="flex items-start justify-between gap-1 min-h-[28px]">
+        <div class="flex items-baseline gap-1">
+          ${monthLabel}
+          <span class="${dayNumStyle}">${d.getDate()}</span>
+        </div>
+        ${events.length > 0 && !isOutsideRange ? `<span class="text-[10px] font-semibold ${isToday ? 'text-slate-700' : 'text-slate-400'} mt-2">${events.length} event${events.length === 1 ? '' : 's'}</span>` : ''}
+      </div>
+      ${!isOutsideRange ? `
+        <div class="flex flex-col gap-0.5 ${eventsDimmed}">
+          ${visible.map(renderMonthCellEvent).join('')}
+          ${overflow > 0 ? `
+            <button data-action="open-day" data-date="${dateKey(d)}" class="text-[11px] text-slate-500 hover:text-slate-900 text-left px-1.5 font-medium mt-0.5">
+              + ${overflow} more
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderMonthCellEvent(ev) {
+  const start = new Date(ev.start);
+  const loc = displayLocation(ev.location);
+  const free = isFreeEvent(ev);
+  const projected = isProjected(ev);
+  const soldOut = isSoldOut(ev);
+  const wrapClass = projected
+    ? 'group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1 border border-dashed border-slate-300'
+    : 'group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1';
+  const timeClass = projected ? 'text-slate-400' : 'text-slate-600';
+  const titleClass = projected ? 'italic text-slate-500' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
+  const rightTag = projected
+    ? '<span class="text-[9.5px] font-bold text-slate-400 tracking-wide ml-auto">TBC</span>'
+    : soldOut
+    ? '<span class="text-[9.5px] font-bold text-rose-600 tracking-wide ml-auto">SOLD OUT</span>'
+    : (free ? '<span class="text-[9.5px] font-bold text-emerald-600 tracking-wide ml-auto">FREE</span>' : '');
+  return `
+    <button data-action="open-event" data-id="${ev.id}"
+      class="${wrapClass}">
+      <div class="flex items-center gap-1.5 leading-none">
+        ${renderSourceAvatar(ev.source, 13)}
+        <span class="text-[10.5px] font-semibold ${timeClass} tracking-tight whitespace-nowrap">${fmtTime(start)}</span>
+        ${rightTag}
+      </div>
+      <div class="mt-1 text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${escapeHtml(ev.title)}</div>
+      ${loc ? `
+        <div class="mt-0.5 flex items-center gap-0.5 text-[10px] text-slate-500 leading-none">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="truncate">${escapeHtml(loc)}</span>
+        </div>
+      ` : ''}
+    </button>
+  `;
+}
+
+// Update the sticky month indicator based on which cell is at the top of the viewport
+function updateStickyMonthLabel() {
+  const indicator = document.getElementById('cur-month');
+  if (!indicator) return;
+  const grid = document.getElementById('cells-grid');
+  if (!grid) return;
+  const sticky = document.querySelector('.month-sticky');
+  const stickyBottom = sticky ? sticky.getBoundingClientRect().bottom : 100;
+  const cells = grid.querySelectorAll('[data-month-key]');
+  let topCell = null;
+  for (const c of cells) {
+    const rect = c.getBoundingClientRect();
+    if (rect.bottom > stickyBottom + 4) { topCell = c; break; }
+  }
+  if (!topCell) return;
+  const key = topCell.dataset.monthKey;
+  const [y, m] = key.split('-').map(Number);
+  const label = `${MONTHS[m-1]} ${y}`;
+  if (indicator.textContent !== label) indicator.textContent = label;
+}
+
+// ---------- Year view ----------
+function renderYearGrid() {
+  const year = STATE.month.getFullYear();
+  const months = [];
+  for (let m = 0; m < 12; m++) months.push(new Date(year, m, 1));
+  return `
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      ${months.map(renderMiniMonth).join('')}
+    </div>
+  `;
+}
+
+function renderMiniMonth(monthStart) {
+  const monthEnd = endOfMonth(monthStart);
+  const firstWeekday = (monthStart.getDay() + 6) % 7;
+  const gridStart = new Date(monthStart); gridStart.setDate(monthStart.getDate() - firstWeekday);
+  const totalDays = firstWeekday + monthEnd.getDate();
+  const rows = Math.ceil(totalDays / 7);
+  const cells = [];
+  for (let i = 0; i < rows * 7; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+    cells.push(d);
+  }
+  const today = new Date();
+  const monthEvents = eventsForMonth(monthStart);
+  const isCurrentMonth = isSameMonth(monthStart, today);
+  return `
+    <div class="bg-white rounded-2xl border ${isCurrentMonth ? 'border-slate-900 ring-2 ring-slate-200' : 'border-slate-200'} overflow-hidden">
+      <button data-action="open-month" data-year="${monthStart.getFullYear()}" data-month="${monthStart.getMonth()}"
+        class="w-full text-left px-3.5 py-2.5 border-b border-slate-100 hover:bg-slate-50 transition flex items-center justify-between">
+        <span class="font-bold text-base text-slate-900">
+          ${MONTHS[monthStart.getMonth()]}
+        </span>
+        <span class="text-xs text-slate-400 font-medium">
+          ${monthEvents.length} event${monthEvents.length === 1 ? '' : 's'}
+        </span>
+      </button>
+      <div class="grid grid-cols-7 text-[9px] text-slate-400 font-bold uppercase border-b border-slate-100 py-1">
+        ${DAY_LABELS.map(l => `<div class="text-center">${l[0]}</div>`).join('')}
+      </div>
+      <div class="grid grid-cols-7 p-2 gap-0.5">
+        ${cells.map(d => renderMiniMonthCell(d, monthStart, today)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderMiniMonthCell(d, monthStart, today) {
+  const isOtherMonth = !isSameMonth(d, monthStart);
+  if (isOtherMonth) return `<div class="aspect-square"></div>`;
+  const isToday = isSameDay(d, today);
+  const isPast = startOfDay(d) < startOfDay(today);
+  const events = eventsForDay(d);
+  const hasEvents = events.length > 0;
+  const cat = hasEvents ? primaryCategory(events[0]) : null;
+  const dayText = isToday
+    ? 'text-white font-bold'
+    : isPast ? 'text-slate-300 font-medium'
+    : hasEvents ? 'text-slate-900 font-semibold'
+    : 'text-slate-500';
+  const bg = isToday ? 'bg-slate-900' : '';
+  return `
+    <button data-action="open-day" data-date="${dateKey(d)}"
+      class="aspect-square rounded-md flex flex-col items-center justify-center text-[11px] hover:bg-slate-100 relative transition ${dayText} ${bg}">
+      <span class="leading-none">${d.getDate()}</span>
+      ${hasEvents && !isToday ? `<span class="cat-${cat} cat-stripe absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"></span>` : ''}
+    </button>
+  `;
+}
+
+// ---------- Event drawer ----------
+function renderEventDrawer(id) {
+  const ev = STATE.events.find(e => e.id === id);
+  if (!ev) return '';
+  const start = new Date(ev.start);
+  const end = ev.end ? new Date(ev.end) : null;
+  const cats = effectiveCategories(ev);
+  const src = STATE.sources[ev.source];
+  const loc = displayLocation(ev.location);
+  const projected = isProjected(ev);
+  const soldOut = isSoldOut(ev);
+  const links = getLinks(ev);
+  const secondaryLinks = [
+    links.instagram ? { label: 'Instagram', href: links.instagram } : null,
+    links.website   ? { label: 'Website',   href: links.website   } : null,
+  ].filter(Boolean);
+  return `
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-end">
+      <div data-action="close-event" class="absolute inset-0 bg-slate-900/40"></div>
+      <div class="relative bg-white w-full sm:max-w-md sm:h-full sm:rounded-none rounded-t-2xl max-h-[88vh] sm:max-h-full overflow-y-auto shadow-xl">
+        ${ev.image ? `
+          <img src="${escapeHtml(ev.image)}" alt="" loading="lazy"
+            class="w-full h-48 sm:h-56 object-cover bg-slate-100"
+            onerror="this.remove()" />
+        ` : ''}
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-5 py-3.5 flex items-center gap-3">
+          ${renderSourceAvatar(ev.source, 36)}
+          <span class="text-base font-semibold" style="color:${src?.color || '#475569'}">${src?.shortName || ev.source}</span>
+          <div class="flex-1"></div>
+          <button data-action="close-event" class="text-slate-400 hover:text-slate-900 p-1" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="px-5 py-5">
+          <div class="flex items-start gap-2">
+            <h2 class="text-xl font-semibold leading-tight flex-1 ${projected ? 'italic text-slate-700' : (soldOut ? 'text-slate-500' : '')}">${escapeHtml(ev.title)}</h2>
+            ${projected ? '<span class="text-[10px] font-bold tracking-wider uppercase text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-2 py-1 rounded-md whitespace-nowrap">Projected</span>'
+              : soldOut ? '<span class="text-[10px] font-bold tracking-wider uppercase text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-md whitespace-nowrap">Sold out</span>'
+              : ''}
+          </div>
+          <div class="mt-3 space-y-1.5 text-sm text-slate-600">
+            <div class="flex items-start gap-2">
+              <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>${fmtDayHeader(start)} · ${fmtTime(start)}${end ? ' – ' + fmtTime(end) : ''}</span>
+            </div>
+            ${loc ? `
+              <div class="flex items-start gap-2">
+                <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>${escapeHtml(loc)}</span>
+              </div>
+            ` : ''}
+            ${ev.price && !projected ? `
+              <div class="flex items-start gap-2">
+                <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <span>${escapeHtml(ev.price)}</span>
+              </div>
+            ` : ''}
+            ${ev.attendees != null ? `
+              <div class="flex items-start gap-2">
+                <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>${ev.attendees} going</span>
+              </div>
+            ` : ''}
+          </div>
+          ${cats.length ? `
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              ${cats.map(c => `<span class="cat-${c} cat-chip text-xs px-2.5 py-1 rounded-full font-medium capitalize">${c}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${projected ? `
+            <div class="mt-5 p-4 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-sm text-slate-600 leading-relaxed">
+              <strong class="block font-semibold text-slate-900 mb-1">Tickets not yet released</strong>
+              ${escapeHtml(STATE.sources[ev.source]?.shortName || 'This event')} typically releases tickets a few days after the previous month's event. Check back closer to the date.
+            </div>
+          ` : (links.tickets ? `
+            <a href="${escapeHtml(links.tickets)}" target="_blank" rel="noopener" class="mt-6 w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-4 py-3 rounded-xl transition">
+              View event
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          ` : '')}
+          ${secondaryLinks.length ? `
+            <div class="mt-3 flex flex-wrap gap-2">
+              ${secondaryLinks.map(l => `
+                <a href="${escapeHtml(l.href)}" target="_blank" rel="noopener" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                  ${l.label}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Event handlers ----------
+function attachHandlers() {
+  document.querySelectorAll('[data-action]').forEach(el => {
+    el.addEventListener('click', handleAction);
+  });
+}
+
+function handleAction(e) {
+  const el = e.currentTarget;
+  const action = el.dataset.action;
+  const view = effectiveView();
+  switch (action) {
+    case 'prev-period':
+      STATE.month = view === 'year' ? addYears(STATE.month, -1) : addMonths(STATE.month, -1);
+      render(); break;
+    case 'next-period':
+      STATE.month = view === 'year' ? addYears(STATE.month,  1) : addMonths(STATE.month,  1);
+      render(); break;
+    case 'today':
+      STATE.month = view === 'year' ? new Date(new Date().getFullYear(), 0, 1) : startOfMonth(new Date());
+      render(); break;
+    case 'view-list':  STATE.view = 'list';  render(); break;
+    case 'view-month': STATE.view = 'month'; render(); break;
+    case 'view-year':  STATE.view = 'year';  render(); break;
+    case 'toggle-cat': {
+      const c = el.dataset.cat;
+      if (STATE.filters.categories.has(c)) STATE.filters.categories.delete(c);
+      else STATE.filters.categories.add(c);
+      render(); break;
+    }
+    case 'toggle-src': {
+      const s = el.dataset.src;
+      if (STATE.filters.sources.has(s)) STATE.filters.sources.delete(s);
+      else STATE.filters.sources.add(s);
+      render(); break;
+    }
+    case 'clear-filters':
+      STATE.filters.categories.clear();
+      STATE.filters.sources.clear();
+      render(); break;
+    case 'open-event':
+      STATE.openEvent = el.dataset.id;
+      render(); break;
+    case 'close-event':
+      STATE.openEvent = null;
+      render(); break;
+    case 'open-month': {
+      const y = parseInt(el.dataset.year, 10);
+      const m = parseInt(el.dataset.month, 10);
+      STATE.month = new Date(y, m, 1);
+      STATE.view = 'month';
+      render(); break;
+    }
+    case 'open-day': {
+      const k = el.dataset.date;
+      const [y, m, d] = k.split('-').map(Number);
+      STATE.month = new Date(y, m-1, 1);
+      STATE.view = 'list';
+      render();
+      setTimeout(() => {
+        const headers = [...document.querySelectorAll('section h2')];
+        const target = headers.find(h => h.textContent.includes(`${d} ${MONTHS[m-1]}`) || h.textContent.includes(`${d} ${MONTHS[m-1].slice(0,3)}`));
+        target && target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
+      break;
+    }
+  }
+}
+
+// ---------- Utils ----------
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch]));
+}
+// Returns the location to show, or '' if it's generic / unknown
+function displayLocation(loc) {
+  if (!loc) return '';
+  const trimmed = String(loc).trim();
+  if (/^(london|uk|united kingdom|england|location tbc|tbc|tba|location revealed.*)$/i.test(trimmed)) return '';
+  // strip "London"/"UK" suffix if present, return first meaningful part
+  const parts = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+  if (parts.length === 0) return '';
+  const first = parts[0];
+  if (/^(london|uk|united kingdom)$/i.test(first)) return parts[1] || '';
+  return first;
+}
+function isFreeEvent(ev) {
+  return ev.price && /^(free|0)$/i.test(String(ev.price).trim());
+}
+function isProjected(ev) {
+  return ev.status === 'projected';
+}
+function isSoldOut(ev) {
+  return ev.soldOut === true;
+}
+// Public links to surface. Falls back to ev.url for confirmed events so older
+// data (TRYBZ/BGO) without the explicit links object keeps working.
+function getLinks(ev) {
+  const l = ev.links || {};
+  return {
+    tickets: l.tickets || (isProjected(ev) ? null : ev.url),
+    website: l.website || null,
+    instagram: l.instagram || null,
+  };
+}
+function renderSourceAvatar(sourceId, size = 16) {
+  const src = STATE.sources[sourceId];
+  if (!src) return '';
+  const letter = (src.letter || src.shortName || src.name || sourceId)[0].toUpperCase();
+  const color = src.color || '#64748b';
+  const font = Math.max(8, Math.round(size * 0.58));
+  if (src.logo) {
+    return `<img src="${src.logo}" alt="${escapeHtml(src.name)}" loading="lazy"
+      class="rounded-full flex-shrink-0 object-cover"
+      style="width:${size}px;height:${size}px;background:${color}"
+      onerror="this.outerHTML='<span class=\\'inline-flex items-center justify-center rounded-full flex-shrink-0 text-white font-bold leading-none\\' style=\\'width:${size}px;height:${size}px;background:${color};font-size:${font}px\\'>${letter}</span>'" />`;
+  }
+  return `<span class="inline-flex items-center justify-center rounded-full flex-shrink-0 text-white font-bold leading-none"
+    style="width:${size}px;height:${size}px;background:${color};font-size:${font}px">${letter}</span>`;
+}
+
+// ---------- Go ----------
+init();

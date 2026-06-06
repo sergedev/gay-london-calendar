@@ -1,0 +1,23 @@
+[
+  {
+    "id": "the-social-gays-mixer-two-brewers-2026-06-12",
+    "source": "the-social-gays",
+    "title": "The Social Gays Mixer Night @ Two Brewers",
+    "start": "2026-06-12T19:00:00+01:00",
+    "end": "2026-06-12T22:00:00+01:00",
+    "location": "Two Brewers, Clapham",
+    "price": "£8.50",
+    "url": "https://www.outsavvy.com/event/35850/the-social-gays-mixer-night",
+    "image": "https://cdn.outsavvy.com/events/eafc622e-beca-4c2f-926e-c06ca69e1fdd.jpeg",
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://www.outsavvy.com/event/35850/the-social-gays-mixer-night",
+      "website": "https://www.outsavvy.com/organiser/the-social-gays",
+      "instagram": "https://www.instagram.com/thesocialgays"
+    },
+    "description": "Friendly mixer designed to help you meet new people without the awkwardness. Name tags, chilled atmosphere, good drinks, good music.",
+    "soldOut": false,
+    "categories": ["social"],
+    "categoriesOverride": null
+  }
+]

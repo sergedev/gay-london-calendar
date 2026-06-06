@@ -1,0 +1,110 @@
+[
+  {
+    "id": "village-drinks-eb-1990270069354",
+    "source": "village-drinks",
+    "title": "Village Drinks",
+    "start": "2026-06-25T18:30:00+01:00",
+    "end": "2026-06-25T23:30:00+01:00",
+    "location": "Location revealed close to the event",
+    "price": "£16.96",
+    "url": "https://www.eventbrite.co.uk/e/village-drinks-a-unique-evening-of-social-networking-for-gay-professionals-tickets-1990270069354",
+    "image": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1186010434%2F159500724867%2F1%2Foriginal.20260602-221932?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.527&fp-y=0.26&s=bbf43f155858023f2d0161a01ddae975",
+    "status": "confirmed",
+    "recurrence": "last-thursday-monthly",
+    "links": {
+      "tickets": "https://www.eventbrite.co.uk/e/village-drinks-a-unique-evening-of-social-networking-for-gay-professionals-tickets-1990270069354",
+      "website": "https://www.villagedrinks.com/",
+      "instagram": "https://www.instagram.com/villagedrinksldn/"
+    },
+    "description": "Meaningful connections. Hundreds of like-minded guys, in one special venue.",
+    "soldOut": false,
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "village-drinks-2026-07-projected",
+    "source": "village-drinks",
+    "title": "Village Drinks",
+    "start": "2026-07-30T18:30:00+01:00",
+    "end": "2026-07-30T23:30:00+01:00",
+    "location": "Location revealed close to the event",
+    "price": null,
+    "url": "https://www.villagedrinks.com/",
+    "status": "projected",
+    "recurrence": "last-thursday-monthly",
+    "links": {
+      "website": "https://www.villagedrinks.com/",
+      "instagram": "https://www.instagram.com/villagedrinksldn/"
+    },
+    "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "village-drinks-2026-08-projected",
+    "source": "village-drinks",
+    "title": "Village Drinks",
+    "start": "2026-08-27T18:30:00+01:00",
+    "end": "2026-08-27T23:30:00+01:00",
+    "location": "Location revealed close to the event",
+    "price": null,
+    "url": "https://www.villagedrinks.com/",
+    "status": "projected",
+    "recurrence": "last-thursday-monthly",
+    "links": {
+      "website": "https://www.villagedrinks.com/",
+      "instagram": "https://www.instagram.com/villagedrinksldn/"
+    },
+    "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "village-drinks-2026-09-projected",
+    "source": "village-drinks",
+    "title": "Village Drinks",
+    "start": "2026-09-24T18:30:00+01:00",
+    "end": "2026-09-24T23:30:00+01:00",
+    "location": "Location revealed close to the event",
+    "price": null,
+    "url": "https://www.villagedrinks.com/",
+    "status": "projected",
+    "recurrence": "last-thursday-monthly",
+    "links": {
+      "website": "https://www.villagedrinks.com/",
+      "instagram": "https://www.instagram.com/villagedrinksldn/"
+    },
+    "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "village-drinks-2026-10-projected",
+    "source": "village-drinks",
+    "title": "Village Drinks",
+    "start": "2026-10-29T18:30:00+01:00",
+    "end": "2026-10-29T23:30:00+01:00",
+    "location": "Location revealed close to the event",
+    "price": null,
+    "url": "https://www.villagedrinks.com/",
+    "status": "projected",
+    "recurrence": "last-thursday-monthly",
+    "links": {
+      "website": "https://www.villagedrinks.com/",
+      "instagram": "https://www.instagram.com/villagedrinksldn/"
+    },
+    "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null
+  }
+]

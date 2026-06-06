@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Gay London Calendar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  <style>
+    html, body { font-family: 'Inter', system-ui, sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* category accent colors */
+    .cat-fitness  { --c: #3b82f6; --cl: #dbeafe; --ct: #1d4ed8; }
+    .cat-arts     { --c: #a855f7; --cl: #f3e8ff; --ct: #7c3aed; }
+    .cat-social   { --c: #ec4899; --cl: #fce7f3; --ct: #be185d; }
+    .cat-outdoors { --c: #10b981; --cl: #d1fae5; --ct: #047857; }
+    .cat-games    { --c: #14b8a6; --cl: #ccfbf1; --ct: #0f766e; }
+    .cat-food     { --c: #f97316; --cl: #ffedd5; --ct: #c2410c; }
+    .cat-pride    { --c: #e11d48; --cl: #ffe4e6; --ct: #be123c; }
+    .cat-festival { --c: #eab308; --cl: #fef9c3; --ct: #a16207; }
+    .cat-default  { --c: #64748b; --cl: #e2e8f0; --ct: #334155; }
+
+    .cat-stripe { background-color: var(--c); }
+    .cat-chip { background-color: var(--cl); color: var(--ct); }
+
+    /* sticky day header in list */
+    .day-header { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <div id="app"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

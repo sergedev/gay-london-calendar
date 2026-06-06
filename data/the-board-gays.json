@@ -1,0 +1,226 @@
+[
+  {
+    "id": "filmgays-2026-06-06",
+    "source": "the-board-gays",
+    "title": "Filmgays",
+    "start": "2026-06-06T19:30:00+01:00",
+    "end": "2026-06-06T23:00:00+01:00",
+    "location": "Kennington",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Fortnightly cinema night for LGBTQ+ film fans. Exact venue address is shared with attendees on the day.",
+    "soldOut": false,
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-06-11",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-06-11T19:30:00+01:00",
+    "end": "2026-06-11T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Fortnightly LGBTQ+ board games night in the basement bar of the Elephant & Castle Pub. Thursdays in the first half of the month, Wednesdays in the second half.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "wolfgays-2026-06-18",
+    "source": "the-board-gays",
+    "title": "Wolfgays",
+    "start": "2026-06-18T19:30:00+01:00",
+    "end": "2026-06-18T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Fortnightly social-deduction (werewolves-style) game night in the basement bar of the Elephant & Castle Pub.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "escapegays-2026-06-19",
+    "source": "the-board-gays",
+    "title": "Escapegays",
+    "start": "2026-06-19T20:45:00+01:00",
+    "end": "2026-06-19T23:00:00+01:00",
+    "location": "clueQuest, N1 0SL",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Monthly escape-room night at clueQuest in Islington.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "filmgays-2026-06-20",
+    "source": "the-board-gays",
+    "title": "Filmgays",
+    "start": "2026-06-20T19:30:00+01:00",
+    "end": "2026-06-20T23:00:00+01:00",
+    "location": "Kennington",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Fortnightly cinema night for LGBTQ+ film fans. Exact venue address is shared with attendees on the day.",
+    "soldOut": false,
+    "categories": [
+      "arts"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-06-24",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-06-24T19:30:00+01:00",
+    "end": "2026-06-24T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Fortnightly LGBTQ+ board games night in the basement bar of the Elephant & Castle Pub. Thursdays in the first half of the month, Wednesdays in the second half.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-07-09-projected",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-07-09T19:30:00+01:00",
+    "end": "2026-07-09T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "projected",
+    "recurrence": "fortnightly",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Projected based on the usual fortnightly cadence. Dates and venue confirmed on Instagram closer to the event.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-07-22-projected",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-07-22T19:30:00+01:00",
+    "end": "2026-07-22T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "projected",
+    "recurrence": "fortnightly",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Projected based on the usual fortnightly cadence. Dates and venue confirmed on Instagram closer to the event.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-08-06-projected",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-08-06T19:30:00+01:00",
+    "end": "2026-08-06T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "projected",
+    "recurrence": "fortnightly",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Projected based on the usual fortnightly cadence. Dates and venue confirmed on Instagram closer to the event.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  },
+  {
+    "id": "boardgays-2026-08-19-projected",
+    "source": "the-board-gays",
+    "title": "Boardgays",
+    "start": "2026-08-19T19:30:00+01:00",
+    "end": "2026-08-19T23:00:00+01:00",
+    "location": "Elephant & Castle Pub (Basement Bar)",
+    "price": null,
+    "url": "https://www.instagram.com/theboardgays",
+    "image": null,
+    "status": "projected",
+    "recurrence": "fortnightly",
+    "links": {
+      "website": "https://www.instagram.com/theboardgays",
+      "instagram": "https://www.instagram.com/theboardgays"
+    },
+    "description": "Projected based on the usual fortnightly cadence. Dates and venue confirmed on Instagram closer to the event.",
+    "soldOut": false,
+    "categories": [
+      "games"
+    ],
+    "categoriesOverride": null
+  }
+]
