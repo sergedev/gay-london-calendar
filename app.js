@@ -22,6 +22,7 @@ const STATE = {
   view: 'auto',
   month: startOfMonth(new Date()),
   filters: { sources: new Set(), categories: new Set() },
+  filtersOpen: false,  // mobile-only — desktop ignores this and always shows chips
   events: [],
   sources: {},
   openEvent: null,
@@ -95,6 +96,14 @@ async function init() {
   }
   applyUrlState();
   render();
+  // First-load: in list view showing today's month, scroll past previous
+  // events so today is what the user sees first. They can scroll up to
+  // reach past events if they want them.
+  scrollToTodayOnInitialLoad();
+  // Once web fonts load, header/filter heights may shift slightly. Re-measure.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => updateLayoutVars());
+  }
   window.addEventListener('resize', debounce(render, 150));
   window.addEventListener('popstate', () => { applyUrlState(); render(); });
   window.addEventListener('keydown', (e) => {
@@ -102,6 +111,20 @@ async function init() {
   });
   // Global scroll listener: updates the sticky month indicator on month view
   window.addEventListener('scroll', () => updateStickyMonthLabel(), { passive: true });
+}
+
+function scrollToTodayOnInitialLoad() {
+  const today = new Date();
+  const onCurrentMonth =
+    STATE.month.getMonth() === today.getMonth() &&
+    STATE.month.getFullYear() === today.getFullYear();
+  if (effectiveView() !== 'list' || !onCurrentMonth) return;
+  // Defer one frame so headers exist and sticky offsets have been measured.
+  requestAnimationFrame(() => {
+    const todayHeader = [...document.querySelectorAll('section h2')]
+      .find(h => h.textContent.trim().toLowerCase().startsWith('today'));
+    if (todayHeader) todayHeader.scrollIntoView({ behavior: 'auto', block: 'start' });
+  });
 }
 function debounce(fn, ms) {
   let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
@@ -150,7 +173,32 @@ function render() {
     ${STATE.openEvent ? renderEventDrawer(STATE.openEvent) : ''}
   `;
   attachHandlers();
+  updateLayoutVars();
   if (effView === 'month') updateStickyMonthLabel();
+}
+
+// Measure the live header + filter bar heights and publish them as CSS
+// variables, so sticky offsets adapt automatically when the mobile header
+// becomes two rows or the mobile filter bar expands. A ResizeObserver
+// re-measures whenever fonts load, viewport rotates, or content shifts —
+// otherwise first-paint values use fallback-font metrics and stick at the
+// wrong offsets until the next re-render.
+let _layoutObserver = null;
+function updateLayoutVars() {
+  const header = document.getElementById('app-header');
+  const filterBar = document.getElementById('filter-bar');
+  const root = document.documentElement;
+  const apply = () => {
+    if (header)    root.style.setProperty('--header-h', header.offsetHeight + 'px');
+    if (filterBar) root.style.setProperty('--filter-h', filterBar.offsetHeight + 'px');
+  };
+  apply();
+  if (window.ResizeObserver) {
+    if (_layoutObserver) _layoutObserver.disconnect();
+    _layoutObserver = new ResizeObserver(apply);
+    if (header) _layoutObserver.observe(header);
+    if (filterBar) _layoutObserver.observe(filterBar);
+  }
 }
 
 function renderHeader(effView, isDesktop) {
@@ -161,34 +209,72 @@ function renderHeader(effView, isDesktop) {
       : `${MONTHS[STATE.month.getMonth()]} ${STATE.month.getFullYear()}`;
   const prevLabel = effView === 'year' ? 'Previous year' : 'Previous month';
   const nextLabel = effView === 'year' ? 'Next year' : 'Next month';
+
+  // "Today" button only appears when not already on today's view.
+  const now = new Date();
+  const onTodayPeriod = effView === 'year'
+    ? STATE.month.getFullYear() === now.getFullYear()
+    : (STATE.month.getMonth() === now.getMonth() && STATE.month.getFullYear() === now.getFullYear());
+  const showTodayBtn = !onTodayPeriod;
+
+  const todayBtn = `
+    <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-300 hover:bg-slate-50 text-slate-700 whitespace-nowrap">
+      Today
+    </button>`;
+  const prevBtn = `
+    <button data-action="prev-period" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${prevLabel}" aria-label="${prevLabel}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>`;
+  const nextBtn = `
+    <button data-action="next-period" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${nextLabel}" aria-label="${nextLabel}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>`;
+  const monthLabelBtnDesktop = `
+    <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 hover:bg-slate-50 whitespace-nowrap">
+      ${titleText}
+    </button>`;
+  const monthLabelBtnMobile = `
+    <button data-action="today" class="flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold text-center border border-slate-200 hover:bg-slate-50">
+      ${titleText}
+    </button>`;
+  const viewToggle = isDesktop ? `
+    <div class="flex rounded-lg border border-slate-200 p-0.5 bg-white">
+      <button data-action="view-list"  class="px-3 py-1 text-sm rounded-md ${effView==='list'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">List</button>
+      <button data-action="view-month" class="px-3 py-1 text-sm rounded-md ${effView==='month' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Month</button>
+      <button data-action="view-year"  class="px-3 py-1 text-sm rounded-md ${effView==='year'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Year</button>
+    </div>
+  ` : `
+    <div class="flex rounded-lg border border-slate-200 p-0.5 bg-white">
+      <button data-action="view-list" class="px-2 py-1 text-xs rounded-md ${effView==='list' ? 'bg-slate-900 text-white' : 'text-slate-600'}">List</button>
+      <button data-action="view-year" class="px-2 py-1 text-xs rounded-md ${effView==='year' ? 'bg-slate-900 text-white' : 'text-slate-600'}">Year</button>
+    </div>
+  `;
+
   return `
     <header id="app-header" class="sticky top-0 z-40 bg-white/90 day-header border-b border-slate-200">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
-        <div class="flex-1 min-w-0">
-          <h1 class="text-lg sm:text-xl font-semibold tracking-tight">Gay London Calendar</h1>
-          <p class="text-xs text-slate-500 -mt-0.5">Events from your favourite communities</p>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
+        <!-- Row 1: title + (desktop nav inline) + view toggle -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-base sm:text-xl font-semibold tracking-tight truncate">Gay London Calendar</h1>
+            <p class="hidden sm:block text-xs text-slate-500 -mt-0.5">Events from your favourite communities</p>
+          </div>
+          <!-- Desktop only: full nav inline with title -->
+          <div class="hidden sm:flex items-center gap-2">
+            ${showTodayBtn ? todayBtn : ''}
+            ${prevBtn}
+            ${monthLabelBtnDesktop}
+            ${nextBtn}
+          </div>
+          ${viewToggle}
         </div>
-        <button data-action="prev-period" class="px-2 py-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${prevLabel}" aria-label="${prevLabel}">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-        <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 hover:bg-slate-50 whitespace-nowrap">
-          ${titleText}
-        </button>
-        <button data-action="next-period" class="px-2 py-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${nextLabel}" aria-label="${nextLabel}">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-        ${isDesktop ? `
-          <div class="ml-2 flex rounded-lg border border-slate-200 p-0.5 bg-white">
-            <button data-action="view-list"  class="px-3 py-1 text-sm rounded-md ${effView==='list'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">List</button>
-            <button data-action="view-month" class="px-3 py-1 text-sm rounded-md ${effView==='month' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Month</button>
-            <button data-action="view-year"  class="px-3 py-1 text-sm rounded-md ${effView==='year'  ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}">Year</button>
-          </div>
-        ` : `
-          <div class="ml-1 flex rounded-lg border border-slate-200 p-0.5 bg-white">
-            <button data-action="view-list" class="px-2 py-1 text-xs rounded-md ${effView==='list' ? 'bg-slate-900 text-white' : 'text-slate-600'}">List</button>
-            <button data-action="view-year" class="px-2 py-1 text-xs rounded-md ${effView==='year' ? 'bg-slate-900 text-white' : 'text-slate-600'}">Year</button>
-          </div>
-        `}
+        <!-- Row 2 (mobile only): prev / month label / next  (+ Today if not on today) -->
+        <div class="sm:hidden mt-2 flex items-center gap-1.5">
+          ${prevBtn}
+          ${monthLabelBtnMobile}
+          ${nextBtn}
+          ${showTodayBtn ? todayBtn : ''}
+        </div>
       </div>
     </header>
   `;
@@ -199,41 +285,64 @@ function renderFilterBar() {
   const sourceIds = Object.keys(STATE.sources);
   const anySource = sourceIds.length > 1;
   const activeCount = f.categories.size + f.sources.size;
+  const isOpen = STATE.filtersOpen;
+
+  const chips = `
+    ${CATEGORIES.map(c => {
+      const active = f.categories.has(c.id);
+      return `
+        <button data-action="toggle-cat" data-cat="${c.id}"
+          class="cat-${c.id} flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition
+            ${active
+              ? 'cat-chip ring-2 ring-offset-1 ring-[color:var(--c)]'
+              : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+          <span class="w-2 h-2 rounded-full cat-stripe"></span>
+          ${c.label}
+        </button>
+      `;
+    }).join('')}
+    ${anySource ? sourceIds.map(sid => {
+      const src = STATE.sources[sid];
+      const active = f.sources.has(sid);
+      return `
+        <button data-action="toggle-src" data-src="${sid}"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition
+            ${active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'}">
+          ${renderSourceAvatar(sid, 14)}
+          ${escapeHtml(src.shortName || src.name)}
+        </button>
+      `;
+    }).join('') : ''}
+    ${activeCount > 0 ? `
+      <button data-action="clear-filters" class="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full text-sm text-slate-500 hover:text-slate-900 whitespace-nowrap">
+        Clear filters
+      </button>
+    ` : ''}
+  `;
 
   return `
-    <div id="filter-bar" class="sticky top-[57px] sm:top-[63px] z-30 bg-slate-50/90 day-header border-b border-slate-100">
+    <div id="filter-bar" class="sticky z-30 bg-slate-50/90 day-header border-b border-slate-100" style="top: var(--header-h)">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5">
-        <div class="filter-row flex flex-wrap gap-2">
-          ${CATEGORIES.map(c => {
-            const active = f.categories.has(c.id);
-            return `
-              <button data-action="toggle-cat" data-cat="${c.id}"
-                class="cat-${c.id} flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition
-                  ${active
-                    ? 'cat-chip ring-2 ring-offset-1 ring-[color:var(--c)]'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
-                <span class="w-2 h-2 rounded-full cat-stripe"></span>
-                ${c.label}
-              </button>
-            `;
-          }).join('')}
-          ${anySource ? sourceIds.map(sid => {
-            const src = STATE.sources[sid];
-            const active = f.sources.has(sid);
-            return `
-              <button data-action="toggle-src" data-src="${sid}"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition
-                  ${active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'}">
-                ${renderSourceAvatar(sid, 14)}
-                ${escapeHtml(src.shortName || src.name)}
-              </button>
-            `;
-          }).join('') : ''}
+        <!-- Mobile: toggle button row -->
+        <div class="sm:hidden flex items-center justify-between gap-2">
+          <button data-action="toggle-filters" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border border-slate-200 bg-white hover:bg-slate-50">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="6"  x2="20" y2="6"/>
+              <line x1="7" y1="12" x2="17" y2="12"/>
+              <line x1="10" y1="18" x2="14" y2="18"/>
+            </svg>
+            <span>Filters${activeCount > 0 ? ` <span class="ml-0.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-semibold rounded-full bg-slate-900 text-white">${activeCount}</span>` : ''}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform ${isOpen ? 'rotate-180' : ''}"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
           ${activeCount > 0 ? `
             <button data-action="clear-filters" class="px-3 py-1.5 rounded-full text-sm text-slate-500 hover:text-slate-900 whitespace-nowrap">
-              Clear filters
+              Clear
             </button>
           ` : ''}
+        </div>
+        <!-- Chips: always visible on desktop, only when open on mobile -->
+        <div class="filter-row flex flex-wrap gap-2 ${isOpen ? 'mt-3 sm:mt-0 flex' : 'hidden sm:flex'}">
+          ${chips}
         </div>
       </div>
     </div>
@@ -268,8 +377,9 @@ function renderList() {
         const isPast = startOfDay(date) < startOfDay(today);
         return `
           <section>
-            <h2 class="sticky top-[105px] sm:top-[111px] z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-1.5 bg-slate-50/95 day-header text-xs font-semibold uppercase tracking-wider flex items-center gap-2
-              ${isToday ? 'text-slate-900' : (isPast ? 'text-slate-400' : 'text-slate-500')}">
+            <h2 class="sticky z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-1.5 bg-slate-50/95 day-header text-xs font-semibold uppercase tracking-wider flex items-center gap-2
+              ${isToday ? 'text-slate-900' : (isPast ? 'text-slate-400' : 'text-slate-500')}"
+              style="top: calc(var(--header-h) + var(--filter-h))">
               ${isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-slate-900"></span>' : ''}
               ${fmtDayHeader(date)}
             </h2>
@@ -352,7 +462,7 @@ function renderMonthsView() {
   const earliestMonth = startMonth;
   return `
     <div class="bg-white rounded-2xl border border-slate-200">
-      <div class="month-sticky sticky top-[105px] sm:top-[111px] z-20 bg-white border-b border-slate-200 rounded-t-2xl">
+      <div class="month-sticky sticky z-20 bg-white border-b border-slate-200 rounded-t-2xl" style="top: calc(var(--header-h) + var(--filter-h))">
         <div class="px-4 sm:px-5 py-2.5">
           <span id="cur-month" class="text-xl font-bold tracking-tight text-slate-900" data-default="${MONTHS[earliestMonth.getMonth()]} ${earliestMonth.getFullYear()}">${MONTHS[earliestMonth.getMonth()]} ${earliestMonth.getFullYear()}</span>
         </div>
@@ -675,12 +785,29 @@ function handleAction(e) {
     case 'next-period':
       STATE.month = view === 'year' ? addYears(STATE.month,  1) : addMonths(STATE.month,  1);
       render(); break;
-    case 'today':
+    case 'today': {
       STATE.month = view === 'year' ? new Date(new Date().getFullYear(), 0, 1) : startOfMonth(new Date());
-      render(); break;
+      render();
+      // In list view, also scroll to today's section. Other views just scroll to top.
+      setTimeout(() => {
+        if (view === 'list') {
+          const todayHeader = [...document.querySelectorAll('section h2')]
+            .find(h => h.textContent.trim().toLowerCase().startsWith('today'));
+          if (todayHeader) {
+            todayHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 0);
+      break;
+    }
     case 'view-list':  STATE.view = 'list';  render(); break;
     case 'view-month': STATE.view = 'month'; render(); break;
     case 'view-year':  STATE.view = 'year';  render(); break;
+    case 'toggle-filters':
+      STATE.filtersOpen = !STATE.filtersOpen;
+      render(); break;
     case 'toggle-cat': {
       const c = el.dataset.cat;
       if (STATE.filters.categories.has(c)) STATE.filters.categories.delete(c);

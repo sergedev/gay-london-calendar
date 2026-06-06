@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <title>Gay London Calendar</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -24,6 +25,9 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Sticky-offset variables — measured & set from JS after every render */
+    :root { --header-h: 64px; --filter-h: 48px; }
 
     /* category accent colors */
     .cat-fitness  { --c: #3b82f6; --cl: #dbeafe; --ct: #1d4ed8; }
