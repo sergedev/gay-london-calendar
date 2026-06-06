@@ -20,7 +20,8 @@
       "social",
       "festival"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Ttr"
   },
   {
     "id": "mighty-hoopla-2026-day2",
@@ -43,6 +44,7 @@
       "social",
       "festival"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "k9s"
   }
 ]

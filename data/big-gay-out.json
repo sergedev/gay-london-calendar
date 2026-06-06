@@ -21,7 +21,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 48
+    "attendees": 48,
+    "shortCode": "SBL"
   },
   {
     "id": "monthly-mixer-at-the-cock-tavern--1776872680204",
@@ -45,7 +46,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 51
+    "attendees": 51,
+    "shortCode": "yXN"
   },
   {
     "id": "riverside-hike-marlow-and-henley-on-thames-loop",
@@ -62,7 +64,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 24
+    "attendees": 24,
+    "shortCode": "BJH"
   },
   {
     "id": "aprons-only-handmade-pasta-workshop",
@@ -80,7 +83,8 @@
     "categoriesOverride": null,
     "soldOut": true,
     "attendeeLimit": 11,
-    "attendees": 11
+    "attendees": 11,
+    "shortCode": "UQO"
   },
   {
     "id": "war-horse-at-the-national-theatre",
@@ -98,7 +102,8 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 7,
-    "attendees": 7
+    "attendees": 7,
+    "shortCode": "tRP"
   },
   {
     "id": "wild-swimming-sauna-cold-dip",
@@ -115,7 +120,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 17
+    "attendees": 17,
+    "shortCode": "kbC"
   },
   {
     "id": "may-monthly-bouldering-substation-brixton-1780474068239",
@@ -132,7 +138,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 9
+    "attendees": 9,
+    "shortCode": "h7c"
   },
   {
     "id": "shalford-three-peaks-hike",
@@ -149,7 +156,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 23
+    "attendees": 23,
+    "shortCode": "Jes"
   },
   {
     "id": "bgo-mixer-2026-07-projected",
@@ -169,7 +177,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "7No"
   },
   {
     "id": "grindr-the-opera-an-unauthorised-parody",
@@ -187,7 +196,8 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 29,
-    "attendees": 11
+    "attendees": 11,
+    "shortCode": "jgg"
   },
   {
     "id": "the-annual-seven-sisters-cliffs-hike",
@@ -205,7 +215,8 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 50,
-    "attendees": 26
+    "attendees": 26,
+    "shortCode": "VY0"
   },
   {
     "id": "big-gay-picnic-in-regent-s-park",
@@ -223,7 +234,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 9
+    "attendees": 9,
+    "shortCode": "2Wk"
   },
   {
     "id": "big-gay-beach-day-west-wittering",
@@ -241,7 +253,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 7
+    "attendees": 7,
+    "shortCode": "msm"
   },
   {
     "id": "bgo-mixer-2026-08-projected",
@@ -261,7 +274,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "9sl"
   },
   {
     "id": "bgo-mixer-2026-09-projected",
@@ -281,7 +295,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "4mr"
   },
   {
     "id": "big-gay-tough-mudder-sept-2026",
@@ -298,7 +313,8 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 22
+    "attendees": 22,
+    "shortCode": "uXo"
   },
   {
     "id": "bgo-mixer-2026-10-projected",
@@ -318,6 +334,7 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "YnH"
   }
 ]

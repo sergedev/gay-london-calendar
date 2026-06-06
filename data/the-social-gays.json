@@ -17,7 +17,10 @@
     },
     "description": "Friendly mixer designed to help you meet new people without the awkwardness. Name tags, chilled atmosphere, good drinks, good music.",
     "soldOut": false,
-    "categories": ["social"],
-    "categoriesOverride": null
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "HTB"
   }
 ]

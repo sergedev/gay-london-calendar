@@ -16,8 +16,11 @@
     },
     "description": "LGBTQ+ social meetup for dog owners and dog lovers at The Arzner. Tickets required.",
     "soldOut": false,
-    "categories": ["social"],
-    "categoriesOverride": null
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "C7Y"
   },
   {
     "id": "barks-and-boys-2026-08-30",
@@ -36,7 +39,10 @@
     },
     "description": "LGBTQ+ social meetup for dog owners and dog lovers at The Arzner. Tickets required.",
     "soldOut": false,
-    "categories": ["social"],
-    "categoriesOverride": null
+    "categories": [
+      "social"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "JNU"
   }
 ]

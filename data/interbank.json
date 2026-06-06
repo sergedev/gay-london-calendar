@@ -21,7 +21,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "GTu"
   },
   {
     "id": "interbank-os-33999",
@@ -45,7 +46,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "shW"
   },
   {
     "id": "interbank-os-34726",
@@ -69,7 +71,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "DBN"
   },
   {
     "id": "interbank-os-35542",
@@ -93,7 +96,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "0q2"
   },
   {
     "id": "interbank-os-36891",
@@ -117,7 +121,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "FY4"
   },
   {
     "id": "interbank-2026-07-projected",
@@ -140,7 +145,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "nbn"
   },
   {
     "id": "interbank-2026-08-projected",
@@ -163,7 +169,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "XNV"
   },
   {
     "id": "interbank-2026-09-projected",
@@ -186,7 +193,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Rg1"
   },
   {
     "id": "interbank-2026-10-projected",
@@ -209,6 +217,7 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "H79"
   }
 ]

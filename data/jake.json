@@ -20,7 +20,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "2K5"
   },
   {
     "id": "jake-biggaybbq2026",
@@ -44,7 +45,8 @@
       "pride",
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "bot"
   },
   {
     "id": "jake-homehousestudio",
@@ -67,6 +69,7 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "VPY"
   }
 ]

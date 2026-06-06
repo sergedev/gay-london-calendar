@@ -19,7 +19,8 @@
     "categories": [
       "arts"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Axp"
   },
   {
     "id": "boardgays-2026-06-11",
@@ -41,7 +42,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "svs"
   },
   {
     "id": "wolfgays-2026-06-18",
@@ -63,7 +65,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "9kN"
   },
   {
     "id": "escapegays-2026-06-19",
@@ -85,7 +88,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "6Kw"
   },
   {
     "id": "filmgays-2026-06-20",
@@ -107,7 +111,8 @@
     "categories": [
       "arts"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "MHt"
   },
   {
     "id": "boardgays-2026-06-24",
@@ -129,7 +134,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "XkF"
   },
   {
     "id": "boardgays-2026-07-09-projected",
@@ -152,7 +158,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "N7f"
   },
   {
     "id": "boardgays-2026-07-22-projected",
@@ -175,7 +182,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "SOc"
   },
   {
     "id": "boardgays-2026-08-06-projected",
@@ -198,7 +206,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "WV5"
   },
   {
     "id": "boardgays-2026-08-19-projected",
@@ -221,6 +230,7 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "4sJ"
   }
 ]

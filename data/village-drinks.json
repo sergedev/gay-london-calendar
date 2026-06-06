@@ -21,7 +21,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "yns"
   },
   {
     "id": "village-drinks-2026-07-projected",
@@ -42,7 +43,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "dJi"
   },
   {
     "id": "village-drinks-2026-08-projected",
@@ -63,7 +65,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "94G"
   },
   {
     "id": "village-drinks-2026-09-projected",
@@ -84,7 +87,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "SGR"
   },
   {
     "id": "village-drinks-2026-10-projected",
@@ -105,6 +109,7 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Lmr"
   }
 ]

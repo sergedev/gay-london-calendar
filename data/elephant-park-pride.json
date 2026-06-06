@@ -19,7 +19,11 @@
     },
     "description": "Projected date based on last year's edition (26 Jul 2025). Yet to be confirmed for 2026 — check the Elephant Park website or Instagram closer to the date.",
     "soldOut": false,
-    "categories": ["social", "pride"],
-    "categoriesOverride": null
+    "categories": [
+      "social",
+      "pride"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "yPn"
   }
 ]

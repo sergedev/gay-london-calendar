@@ -22,7 +22,8 @@
       "games",
       "pride"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Lsi"
   },
   {
     "id": "gaymers-inc-2026-07-projected",
@@ -45,7 +46,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "wRJ"
   },
   {
     "id": "gaymers-inc-2026-08-projected",
@@ -68,7 +70,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Wez"
   },
   {
     "id": "gaymers-inc-2026-09-projected",
@@ -91,7 +94,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "lVe"
   },
   {
     "id": "gaymers-inc-2026-10-projected",
@@ -114,7 +118,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "zY4"
   },
   {
     "id": "gaymers-inc-2026-11-projected",
@@ -137,7 +142,8 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "r9b"
   },
   {
     "id": "gaymers-inc-2026-12-projected",
@@ -160,6 +166,7 @@
     "categories": [
       "games"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Y5m"
   }
 ]

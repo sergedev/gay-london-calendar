@@ -21,12 +21,55 @@ const MONTHS_AHEAD = 3;  // months rendered at once in month view
 const STATE = {
   view: 'auto',
   month: startOfMonth(new Date()),
-  filters: { sources: new Set(), categories: new Set() },
+  filters: { sources: new Set(), categories: new Set(), favoritesOnly: false, sharedOnly: false },
   filtersOpen: false,  // mobile-only — desktop ignores this and always shows chips
   events: [],
   sources: {},
   openEvent: null,
+  favorites: new Set(),        // local: Set<shortCode> persisted in localStorage
+  sharedFavorites: new Set(),  // recipient mode: Set<shortCode> read from URL hash
+  sharedNotFound: 0,           // count of f= codes in hash that didn't resolve
 };
+
+// Share URL category encoding: each category → single letter
+const CAT_LETTER = {
+  fitness: 'f', outdoors: 'o', social: 's', arts: 'a',
+  games: 'g', food: 'd', pride: 'p', festival: 'e',
+};
+const LETTER_CAT = Object.fromEntries(Object.entries(CAT_LETTER).map(([k, v]) => [v, k]));
+
+const FAVORITES_KEY = 'glc.favorites.v1';
+function loadFavorites() {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+function saveFavorites() {
+  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...STATE.favorites])); }
+  catch { /* localStorage may be disabled (private mode) */ }
+}
+
+function parseShareHash() {
+  const h = location.hash.slice(1);
+  if (!h) return null;
+  const p = new URLSearchParams(h);
+  if (p.get('v') !== '1') return null;
+  const cats = new Set();
+  for (const l of (p.get('c') || '')) if (LETTER_CAT[l]) cats.add(LETTER_CAT[l]);
+  const favs = new Set();
+  const f = p.get('f') || '';
+  for (let i = 0; i + 3 <= f.length; i += 3) favs.add(f.slice(i, i + 3));
+  return { categories: cats, favorites: favs };
+}
+function buildShareHash() {
+  const parts = ['v=1'];
+  const cats = [...STATE.filters.categories].map(c => CAT_LETTER[c]).filter(Boolean).join('');
+  if (cats) parts.push(`c=${cats}`);
+  const favs = [...STATE.favorites].join('');
+  if (favs) parts.push(`f=${favs}`);
+  return parts.join('&');
+}
 
 // ---------- Date helpers ----------
 function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
@@ -62,6 +105,14 @@ function primaryCategory(ev) {
 }
 function passesFilters(ev) {
   const f = STATE.filters;
+  // Favorites + Shared are independent toggles with OR semantics: if any
+  // are on, the event must be in at least one of the enabled sets.
+  if (f.favoritesOnly || f.sharedOnly) {
+    const code = ev.shortCode;
+    const inFav = f.favoritesOnly && code && STATE.favorites.has(code);
+    const inShared = f.sharedOnly && code && STATE.sharedFavorites.has(code);
+    if (!inFav && !inShared) return false;
+  }
   if (f.sources.size > 0 && !f.sources.has(ev.source)) return false;
   if (f.categories.size > 0) {
     const cats = effectiveCategories(ev);
@@ -95,6 +146,18 @@ async function init() {
     return;
   }
   applyUrlState();
+  // Load local favorites and any incoming share hash
+  STATE.favorites = loadFavorites();
+  const share = parseShareHash();
+  if (share) {
+    if (share.categories.size) STATE.filters.categories = share.categories;
+    STATE.sharedFavorites = share.favorites;
+    const codeSet = new Set(STATE.events.map(e => e.shortCode).filter(Boolean));
+    STATE.sharedNotFound = [...share.favorites].filter(c => !codeSet.has(c)).length;
+    // Auto-enable the Shared filter so the recipient lands on the shared
+    // selection only. They can toggle it off to browse everything.
+    if (share.favorites.size > 0) STATE.filters.sharedOnly = true;
+  }
   render();
   // First-load: in list view showing today's month, scroll past previous
   // events so today is what the user sees first. They can scroll up to
@@ -166,6 +229,7 @@ function render() {
     ${renderHeader(effView, isDesktop)}
     ${renderFilterBar()}
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24">
+      ${renderShareBanner()}
       ${effView === 'month' ? renderMonthsView()
         : effView === 'year' ? renderYearGrid()
         : renderList()}
@@ -217,6 +281,15 @@ function renderHeader(effView, isDesktop) {
     : (STATE.month.getMonth() === now.getMonth() && STATE.month.getFullYear() === now.getFullYear());
   const showTodayBtn = !onTodayPeriod;
 
+  // Share button visible when there's a selection worth sharing.
+  const hasShareable = STATE.favorites.size > 0
+    || STATE.filters.categories.size > 0
+    || STATE.filters.sources.size > 0;
+  const shareBtn = hasShareable ? `
+    <button data-action="share" class="p-2 rounded-lg hover:bg-slate-100 text-slate-700" title="Share your selection" aria-label="Share">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>` : '';
+
   const todayBtn = `
     <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-300 hover:bg-slate-50 text-slate-700 whitespace-nowrap">
       Today
@@ -266,6 +339,7 @@ function renderHeader(effView, isDesktop) {
             ${monthLabelBtnDesktop}
             ${nextBtn}
           </div>
+          ${shareBtn}
           ${viewToggle}
         </div>
         <!-- Row 2 (mobile only): prev / month label / next  (+ Today if not on today) -->
@@ -284,10 +358,37 @@ function renderFilterBar() {
   const f = STATE.filters;
   const sourceIds = Object.keys(STATE.sources);
   const anySource = sourceIds.length > 1;
-  const activeCount = f.categories.size + f.sources.size;
+  const sharedCount = STATE.sharedFavorites.size;
+  const hasShared = sharedCount > 0;
+  const activeCount = f.categories.size + f.sources.size + (f.favoritesOnly ? 1 : 0) + (f.sharedOnly ? 1 : 0);
   const isOpen = STATE.filtersOpen;
+  const favCount = STATE.favorites.size;
+
+  const favChip = `
+    <button data-action="toggle-fav-filter"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition
+        ${f.favoritesOnly
+          ? 'bg-yellow-100 text-yellow-900 ring-2 ring-offset-1 ring-yellow-400'
+          : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="${f.favoritesOnly ? '#facc15' : 'none'}" stroke="${f.favoritesOnly ? '#ca8a04' : '#94a3b8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Favorites${favCount > 0 ? ` <span class="ml-0.5 text-xs text-slate-500">(${favCount})</span>` : ''}
+    </button>
+  `;
+
+  const sharedChip = hasShared ? `
+    <button data-action="toggle-shared-filter"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition
+        ${f.sharedOnly
+          ? 'bg-yellow-50 text-yellow-900 ring-2 ring-offset-1 ring-yellow-300'
+          : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${f.sharedOnly ? '#ca8a04' : '#94a3b8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Shared <span class="ml-0.5 text-xs text-slate-500">(${sharedCount})</span>
+    </button>
+  ` : '';
 
   const chips = `
+    ${favChip}
+    ${sharedChip}
     ${CATEGORIES.map(c => {
       const active = f.categories.has(c.id);
       return `
@@ -393,6 +494,69 @@ function renderList() {
   `;
 }
 
+function renderShareBanner() {
+  if (STATE.sharedFavorites.size === 0) return '';
+  const n = STATE.sharedFavorites.size;
+  const missing = STATE.sharedNotFound;
+  return `
+    <div class="mb-4 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+      <div class="text-sm text-yellow-900 leading-tight">
+        <span class="font-semibold">Shared selection:</span> ${n} event${n === 1 ? '' : 's'} highlighted
+        ${missing > 0 ? `<span class="block text-xs text-yellow-700 mt-0.5">${missing} event${missing === 1 ? '' : 's'} in this share no longer available</span>` : ''}
+      </div>
+      <button data-action="clear-share" class="text-sm text-yellow-800 hover:text-yellow-900 font-medium underline whitespace-nowrap">Clear</button>
+    </div>
+  `;
+}
+
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-full shadow-lg transition-opacity duration-300';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; }, 1500);
+  setTimeout(() => el.remove(), 1900);
+}
+
+async function doShare() {
+  const hash = buildShareHash();
+  const url = `${location.origin}${location.pathname}#${hash}`;
+  const favCount = STATE.favorites.size;
+  const text = favCount > 0
+    ? `${favCount} event${favCount === 1 ? '' : 's'} on my Gay London Calendar`
+    : 'Gay London Calendar';
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Gay London Calendar', text, url }); return; }
+    catch (e) { if (e.name === 'AbortError') return; /* fall through to clipboard */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Link copied');
+  } catch {
+    // Last-resort: write to the URL bar so the user can copy from there.
+    history.replaceState(null, '', `#${hash}`);
+    showToast('Link in address bar');
+  }
+}
+
+function starSvg(filled) {
+  return filled
+    ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+}
+function renderFavBtn(ev, padding = 'p-1.5') {
+  if (!ev.shortCode) return '';
+  const isFav = STATE.favorites.has(ev.shortCode);
+  const label = isFav ? 'Remove from favorites' : 'Add to favorites';
+  return `
+    <button data-action="toggle-fav" data-code="${ev.shortCode}"
+      class="${padding} rounded-full hover:bg-slate-100 transition"
+      aria-label="${label}" title="${label}">
+      ${starSvg(isFav)}
+    </button>
+  `;
+}
+
 function renderListCard(ev) {
   const start = new Date(ev.start);
   const cats = effectiveCategories(ev);
@@ -401,9 +565,11 @@ function renderListCard(ev) {
   const free = isFreeEvent(ev);
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
+  const isShared = ev.shortCode && STATE.sharedFavorites.has(ev.shortCode);
+  const sharedRing = isShared ? ' ring-2 ring-yellow-300 shadow-sm' : '';
   const wrapClass = projected
-    ? 'w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4 border border-dashed border-slate-300'
-    : 'w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4';
+    ? `w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4 border border-dashed border-slate-300${sharedRing}`
+    : `w-full text-left bg-white rounded-xl hover:bg-slate-50 transition p-3.5 sm:p-4${sharedRing}`;
   const priceChunk = projected
     ? '<span class="text-slate-300">·</span><span class="text-slate-500 font-bold tracking-wide">TBC</span>'
     : soldOut
@@ -413,28 +579,33 @@ function renderListCard(ev) {
         : `<span class="text-slate-300">·</span><span class="text-slate-500 font-medium">${escapeHtml(ev.price)}</span>`) : '');
   const titleClass = projected ? 'italic text-slate-600' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
   return `
-    <button data-action="open-event" data-id="${ev.id}"
-      class="${wrapClass}">
-      <div class="flex items-center gap-2 text-xs">
-        ${renderSourceAvatar(ev.source, 18)}
-        <span class="font-semibold" style="color:${src?.color || '#475569'}">${escapeHtml(src?.shortName || ev.source)}</span>
-        <span class="text-slate-300">·</span>
-        <span class="font-semibold ${projected ? 'text-slate-500' : 'text-slate-900'}">${fmtTime(start)}</span>
-        ${priceChunk}
-      </div>
-      <div class="mt-1.5 ${titleClass} leading-snug line-clamp-2">${escapeHtml(ev.title)}</div>
-      ${loc ? `
-        <div class="mt-1 flex items-center gap-1 text-sm text-slate-500">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span class="truncate">${escapeHtml(loc)}</span>
+    <div class="relative">
+      <button data-action="open-event" data-id="${ev.id}"
+        class="${wrapClass}">
+        <div class="flex items-center gap-2 text-xs pr-9">
+          ${renderSourceAvatar(ev.source, 18)}
+          <span class="font-semibold" style="color:${src?.color || '#475569'}">${escapeHtml(src?.shortName || ev.source)}</span>
+          <span class="text-slate-300">·</span>
+          <span class="font-semibold ${projected ? 'text-slate-500' : 'text-slate-900'}">${fmtTime(start)}</span>
+          ${priceChunk}
         </div>
+        <div class="mt-1.5 ${titleClass} leading-snug line-clamp-2 pr-9">${escapeHtml(ev.title)}</div>
+        ${loc ? `
+          <div class="mt-1 flex items-center gap-1 text-sm text-slate-500">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span class="truncate">${escapeHtml(loc)}</span>
+          </div>
+        ` : ''}
+        ${cats.length ? `
+          <div class="mt-2 flex flex-wrap gap-1">
+            ${cats.map(c => `<span class="cat-${c} cat-chip text-[10.5px] px-2 py-0.5 rounded-full font-medium capitalize">${c}</span>`).join('')}
+          </div>
+        ` : ''}
+      </button>
+      ${ev.shortCode ? `
+        <div class="absolute top-2 right-2">${renderFavBtn(ev)}</div>
       ` : ''}
-      ${cats.length ? `
-        <div class="mt-2 flex flex-wrap gap-1">
-          ${cats.map(c => `<span class="cat-${c} cat-chip text-[10.5px] px-2 py-0.5 rounded-full font-medium capitalize">${c}</span>`).join('')}
-        </div>
-      ` : ''}
-    </button>
+    </div>
   `;
 }
 
@@ -550,11 +721,18 @@ function renderMonthCellEvent(ev) {
   const free = isFreeEvent(ev);
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
+  const isFav = ev.shortCode && STATE.favorites.has(ev.shortCode);
+  const isShared = ev.shortCode && STATE.sharedFavorites.has(ev.shortCode);
+  const sharedBg = isShared ? ' bg-yellow-50 ring-1 ring-yellow-300' : '';
   const wrapClass = projected
-    ? 'group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1 border border-dashed border-slate-300'
-    : 'group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1';
+    ? `group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1 border border-dashed border-slate-300${sharedBg}`
+    : `group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1${sharedBg}`;
   const timeClass = projected ? 'text-slate-400' : 'text-slate-600';
   const titleClass = projected ? 'italic text-slate-500' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
+  // Right-side tag priority: favorited star > TBC > SOLD OUT > FREE
+  const favStarTag = isFav
+    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="#facc15" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-auto flex-shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+    : '';
   const rightTag = projected
     ? '<span class="text-[9.5px] font-bold text-slate-400 tracking-wide ml-auto">TBC</span>'
     : soldOut
@@ -566,7 +744,7 @@ function renderMonthCellEvent(ev) {
       <div class="flex items-center gap-1.5 leading-none">
         ${renderSourceAvatar(ev.source, 13)}
         <span class="text-[10.5px] font-semibold ${timeClass} tracking-tight whitespace-nowrap">${fmtTime(start)}</span>
-        ${rightTag}
+        ${favStarTag || rightTag}
       </div>
       <div class="mt-1 text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${escapeHtml(ev.title)}</div>
       ${loc ? `
@@ -700,6 +878,7 @@ function renderEventDrawer(id) {
           ${renderSourceAvatar(ev.source, 36)}
           <span class="text-base font-semibold" style="color:${src?.color || '#475569'}">${src?.shortName || ev.source}</span>
           <div class="flex-1"></div>
+          ${renderFavBtn(ev, 'p-1.5')}
           <button data-action="close-event" class="text-slate-400 hover:text-slate-900 p-1" aria-label="Close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
@@ -808,6 +987,29 @@ function handleAction(e) {
     case 'toggle-filters':
       STATE.filtersOpen = !STATE.filtersOpen;
       render(); break;
+    case 'toggle-fav': {
+      const code = el.dataset.code;
+      if (!code) break;
+      if (STATE.favorites.has(code)) STATE.favorites.delete(code);
+      else STATE.favorites.add(code);
+      saveFavorites();
+      render(); break;
+    }
+    case 'toggle-fav-filter':
+      STATE.filters.favoritesOnly = !STATE.filters.favoritesOnly;
+      render(); break;
+    case 'toggle-shared-filter':
+      STATE.filters.sharedOnly = !STATE.filters.sharedOnly;
+      render(); break;
+    case 'share':
+      doShare(); break;
+    case 'clear-share':
+      STATE.sharedFavorites = new Set();
+      STATE.sharedNotFound = 0;
+      STATE.filters.sharedOnly = false;
+      // Strip the hash from the URL but keep query params (filter state).
+      history.replaceState(null, '', location.pathname + location.search);
+      render(); break;
     case 'toggle-cat': {
       const c = el.dataset.cat;
       if (STATE.filters.categories.has(c)) STATE.filters.categories.delete(c);
@@ -823,6 +1025,8 @@ function handleAction(e) {
     case 'clear-filters':
       STATE.filters.categories.clear();
       STATE.filters.sources.clear();
+      STATE.filters.favoritesOnly = false;
+      STATE.filters.sharedOnly = false;
       render(); break;
     case 'open-event':
       STATE.openEvent = el.dataset.id;

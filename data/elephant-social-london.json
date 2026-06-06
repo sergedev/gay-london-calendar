@@ -20,7 +20,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "Ym5"
   },
   {
     "id": "elephant-social-2026-07-projected",
@@ -43,7 +44,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "D56"
   },
   {
     "id": "elephant-social-2026-08-projected",
@@ -66,7 +68,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "2k9"
   },
   {
     "id": "elephant-social-2026-09-projected",
@@ -89,7 +92,8 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "ISW"
   },
   {
     "id": "elephant-social-2026-10-projected",
@@ -112,6 +116,7 @@
     "categories": [
       "social"
     ],
-    "categoriesOverride": null
+    "categoriesOverride": null,
+    "shortCode": "YBx"
   }
 ]

@@ -17,7 +17,11 @@
     },
     "description": "Yearly queer dance and music festival in Manchester.",
     "soldOut": false,
-    "categories": ["social", "festival"],
-    "categoriesOverride": null
+    "categories": [
+      "social",
+      "festival"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "2bq"
   }
 ]

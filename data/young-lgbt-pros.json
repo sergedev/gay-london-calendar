@@ -20,7 +20,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 16
+    "attendees": 16,
+    "shortCode": "ax8"
   },
   {
     "id": "meetup-313949532",
@@ -43,7 +44,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 6
+    "attendees": 6,
+    "shortCode": "5Ek"
   },
   {
     "id": "meetup-313929257",
@@ -66,7 +68,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 5
+    "attendees": 5,
+    "shortCode": "f0I"
   },
   {
     "id": "meetup-314247088",
@@ -89,7 +92,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 5
+    "attendees": 5,
+    "shortCode": "61l"
   },
   {
     "id": "meetup-314247089",
@@ -112,7 +116,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 4
+    "attendees": 4,
+    "shortCode": "UTK"
   },
   {
     "id": "meetup-314247091",
@@ -135,7 +140,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 6
+    "attendees": 6,
+    "shortCode": "ayI"
   },
   {
     "id": "bgxjxtyjcmblb",
@@ -158,7 +164,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "gOM"
   },
   {
     "id": "bgxjxtyjcmbdc",
@@ -181,7 +188,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "IXE"
   },
   {
     "id": "bgxjxtyjcnbjb",
@@ -204,7 +212,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "age"
   },
   {
     "id": "bgxjxtyjcnbbc",
@@ -227,7 +236,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "aU1"
   },
   {
     "id": "bgxjxtyjcpbfb",
@@ -250,7 +260,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "hEa"
   },
   {
     "id": "bgxjxtyjcpbwb",
@@ -273,7 +284,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "hRf"
   },
   {
     "id": "bgxjxtyjcqbcb",
@@ -296,7 +308,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "Gmx"
   },
   {
     "id": "bgxjxtyjcqbtb",
@@ -319,7 +332,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "ZV2"
   },
   {
     "id": "bgxjxtyjcqbmc",
@@ -342,7 +356,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "cqK"
   },
   {
     "id": "bgxjxtykccbqb",
@@ -365,7 +380,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "s1p"
   },
   {
     "id": "bgxjxtykccbjc",
@@ -388,7 +404,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "5yZ"
   },
   {
     "id": "bgxjxtykcdbmb",
@@ -411,7 +428,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "qU0"
   },
   {
     "id": "bgxjxtykcdbfc",
@@ -434,7 +452,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "O7H"
   },
   {
     "id": "bgxjxtykcfbmb",
@@ -457,7 +476,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "SON"
   },
   {
     "id": "bgxjxtykcfbfc",
@@ -480,7 +500,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "33F"
   },
   {
     "id": "bgxjxtykcgbjb",
@@ -503,7 +524,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "IbW"
   },
   {
     "id": "bgxjxtykcgbbc",
@@ -526,7 +548,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "c6R"
   },
   {
     "id": "bgxjxtykchbgb",
@@ -549,7 +572,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "WvJ"
   },
   {
     "id": "bgxjxtykchbxb",
@@ -572,7 +596,8 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "GIo"
   },
   {
     "id": "bgxjxtykcjbcb",
@@ -595,6 +620,7 @@
       "social"
     ],
     "categoriesOverride": null,
-    "attendees": 3
+    "attendees": 3,
+    "shortCode": "rE7"
   }
 ]

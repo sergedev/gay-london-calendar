@@ -16,7 +16,11 @@
     },
     "description": "Gayns Pride special — early-doors party at Ministry of Sound. Details announced on Instagram.",
     "soldOut": false,
-    "categories": ["pride", "social"],
-    "categoriesOverride": null
+    "categories": [
+      "pride",
+      "social"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "ciM"
   }
 ]
