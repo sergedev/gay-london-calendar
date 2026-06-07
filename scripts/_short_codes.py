@@ -22,7 +22,7 @@ ALPHABET = (
     'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     '0123456789'
 )
-CODE_LEN = 3
+CODE_LEN = 2
 
 
 def collect_existing_codes() -> set:
@@ -39,7 +39,7 @@ def collect_existing_codes() -> set:
             continue
         for ev in events:
             c = ev.get('shortCode')
-            if c:
+            if c and len(c) == CODE_LEN:
                 codes.add(c)
     return codes
 

@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _short_codes import collect_existing_codes, assign_to_event
+from _short_codes import CODE_LEN, collect_existing_codes, assign_to_event
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / 'data'
@@ -36,6 +36,10 @@ def main() -> int:
         changed = False
         for ev in events:
             total_events += 1
+            existing_code = ev.get('shortCode')
+            if existing_code and len(existing_code) != CODE_LEN:
+                del ev['shortCode']
+                changed = True
             if not ev.get('shortCode'):
                 assign_to_event(ev, existing)
                 new_codes += 1

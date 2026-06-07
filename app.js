@@ -23,12 +23,14 @@ const STATE = {
   month: startOfMonth(new Date()),
   filters: { sources: new Set(), categories: new Set(), favoritesOnly: false, sharedOnly: false },
   filtersOpen: false,  // mobile-only — desktop ignores this and always shows chips
+  showPastEvents: false,  // list view: hide events whose start day is before today
   events: [],
   sources: {},
   openEvent: null,
   favorites: new Set(),        // local: Set<shortCode> persisted in localStorage
   sharedFavorites: new Set(),  // recipient mode: Set<shortCode> read from URL hash
   sharedNotFound: 0,           // count of f= codes in hash that didn't resolve
+  modal: null,                 // null | 'clear-favorites'
 };
 
 // Share URL category encoding: each category → single letter
@@ -54,16 +56,20 @@ function parseShareHash() {
   const h = location.hash.slice(1);
   if (!h) return null;
   const p = new URLSearchParams(h);
-  if (p.get('v') !== '1') return null;
+  // No version flag in v1 URLs. If a future format adds `v=2+`, this guard
+  // rejects it so the v1 parser doesn't mis-decode the new payload.
+  const v = p.get('v');
+  if (v && v !== '1') return null;
   const cats = new Set();
   for (const l of (p.get('c') || '')) if (LETTER_CAT[l]) cats.add(LETTER_CAT[l]);
   const favs = new Set();
   const f = p.get('f') || '';
-  for (let i = 0; i + 3 <= f.length; i += 3) favs.add(f.slice(i, i + 3));
+  for (let i = 0; i + 2 <= f.length; i += 2) favs.add(f.slice(i, i + 2));
+  if (cats.size === 0 && favs.size === 0) return null;
   return { categories: cats, favorites: favs };
 }
 function buildShareHash() {
-  const parts = ['v=1'];
+  const parts = [];
   const cats = [...STATE.filters.categories].map(c => CAT_LETTER[c]).filter(Boolean).join('');
   if (cats) parts.push(`c=${cats}`);
   const favs = [...STATE.favorites].join('');
@@ -159,10 +165,6 @@ async function init() {
     if (share.favorites.size > 0) STATE.filters.sharedOnly = true;
   }
   render();
-  // First-load: in list view showing today's month, scroll past previous
-  // events so today is what the user sees first. They can scroll up to
-  // reach past events if they want them.
-  scrollToTodayOnInitialLoad();
   // Once web fonts load, header/filter heights may shift slightly. Re-measure.
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => updateLayoutVars());
@@ -170,25 +172,14 @@ async function init() {
   window.addEventListener('resize', debounce(render, 150));
   window.addEventListener('popstate', () => { applyUrlState(); render(); });
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && STATE.openEvent) { STATE.openEvent = null; render(); }
+    if (e.key !== 'Escape') return;
+    if (STATE.modal) { STATE.modal = null; render(); return; }
+    if (STATE.openEvent) { STATE.openEvent = null; render(); }
   });
   // Global scroll listener: updates the sticky month indicator on month view
   window.addEventListener('scroll', () => updateStickyMonthLabel(), { passive: true });
 }
 
-function scrollToTodayOnInitialLoad() {
-  const today = new Date();
-  const onCurrentMonth =
-    STATE.month.getMonth() === today.getMonth() &&
-    STATE.month.getFullYear() === today.getFullYear();
-  if (effectiveView() !== 'list' || !onCurrentMonth) return;
-  // Defer one frame so headers exist and sticky offsets have been measured.
-  requestAnimationFrame(() => {
-    const todayHeader = [...document.querySelectorAll('section h2')]
-      .find(h => h.textContent.trim().toLowerCase().startsWith('today'));
-    if (todayHeader) todayHeader.scrollIntoView({ behavior: 'auto', block: 'start' });
-  });
-}
 function debounce(fn, ms) {
   let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
@@ -225,6 +216,20 @@ function render() {
   const effView = effectiveView();
 
   const app = document.getElementById('app');
+
+  // Preserve <img> nodes across the innerHTML wipe so cached images don't
+  // re-paint on every state change. Key gotcha: replaceWith() *moves* a
+  // node — duplicate-src nodes (e.g. the same source logo on every card)
+  // need a pool, not a single map entry, so each new slot gets its own
+  // preserved node and we only clone when the new DOM has more slots than
+  // we preserved.
+  const preservedPools = new Map();
+  for (const img of app.querySelectorAll('img')) {
+    if (!img.src) continue;
+    if (!preservedPools.has(img.src)) preservedPools.set(img.src, []);
+    preservedPools.get(img.src).push(img);
+  }
+
   app.innerHTML = `
     ${renderHeader(effView, isDesktop)}
     ${renderFilterBar()}
@@ -235,10 +240,139 @@ function render() {
         : renderList()}
     </main>
     ${STATE.openEvent ? renderEventDrawer(STATE.openEvent) : ''}
+    ${renderModal()}
   `;
+
+  const consumed = new Map();
+  for (const img of app.querySelectorAll('img')) {
+    if (!img.src) continue;
+    const pool = preservedPools.get(img.src);
+    if (!pool || pool.length === 0) continue;
+    const idx = consumed.get(img.src) || 0;
+    const replacement = idx < pool.length
+      ? pool[idx]
+      : pool[0].cloneNode(true);
+    consumed.set(img.src, idx + 1);
+    // Inherit the freshly-rendered classes/style so the preserved node
+    // adopts the new container's layout context.
+    replacement.className = img.className;
+    replacement.style.cssText = img.style.cssText;
+    img.replaceWith(replacement);
+  }
+
   attachHandlers();
+  attachDrawerSwipeHandlers();
+  syncBodyScrollLock();
   updateLayoutVars();
   if (effView === 'month') updateStickyMonthLabel();
+}
+
+// Freeze background scroll when a drawer or modal is open. Standard pattern:
+// fix the body in place at the current scrollY, restore on close. Combined
+// with `overscroll-contain` on the drawer, this eliminates touch scroll
+// chaining to the page underneath.
+function syncBodyScrollLock() {
+  const shouldLock = STATE.openEvent !== null || STATE.modal !== null;
+  const body = document.body;
+  const isLocked = body.dataset.scrollLock === '1';
+  if (shouldLock && !isLocked) {
+    const y = window.scrollY;
+    body.dataset.scrollLock = '1';
+    body.dataset.lockY = String(y);
+    body.style.position = 'fixed';
+    body.style.top = `-${y}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+  } else if (!shouldLock && isLocked) {
+    const y = parseInt(body.dataset.lockY || '0', 10);
+    body.style.position = '';
+    body.style.top = '';
+    body.style.left = '';
+    body.style.right = '';
+    body.style.width = '';
+    delete body.dataset.scrollLock;
+    delete body.dataset.lockY;
+    window.scrollTo(0, y);
+  }
+}
+
+// Swipe-down-to-dismiss on the drawer card. Gesture only activates when the
+// drawer is already scrolled to the top — otherwise native scroll wins, so
+// long content can be read by scrolling up first. Past a release threshold
+// (25% of card height, capped at 120px) the drawer animates out and closes.
+function attachDrawerSwipeHandlers() {
+  const card = document.querySelector('[data-drawer-card]');
+  if (!card) return;
+  const backdrop = document.querySelector('[data-drawer-backdrop]');
+  let startY = null;
+  let startScrollTop = 0;
+  let deltaY = 0;
+  let dragging = false;
+
+  const resetVisuals = () => {
+    card.style.transition = 'transform 0.2s ease-out';
+    card.style.transform = 'translateY(0)';
+    if (backdrop) {
+      backdrop.style.transition = 'opacity 0.2s ease-out';
+      backdrop.style.opacity = '';
+    }
+  };
+
+  card.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    startScrollTop = card.scrollTop;
+    deltaY = 0;
+    dragging = false;
+  }, { passive: true });
+
+  card.addEventListener('touchmove', (e) => {
+    if (startY === null) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0 && startScrollTop <= 0) {
+      if (!dragging) {
+        dragging = true;
+        card.style.transition = 'none';
+        if (backdrop) backdrop.style.transition = 'none';
+      }
+      deltaY = dy;
+      card.style.transform = `translateY(${deltaY}px)`;
+      if (backdrop) backdrop.style.opacity = String(Math.max(0, 1 - deltaY / 400));
+      e.preventDefault();
+    } else if (dragging) {
+      deltaY = Math.max(0, dy);
+      card.style.transform = `translateY(${deltaY}px)`;
+      if (backdrop) backdrop.style.opacity = String(Math.max(0, 1 - deltaY / 400));
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  const onEnd = () => {
+    if (startY === null) return;
+    if (dragging) {
+      const threshold = Math.min(120, card.offsetHeight * 0.25);
+      if (deltaY > threshold) {
+        card.style.transition = 'transform 0.2s ease-out';
+        card.style.transform = 'translateY(100%)';
+        if (backdrop) {
+          backdrop.style.transition = 'opacity 0.2s ease-out';
+          backdrop.style.opacity = '0';
+        }
+        setTimeout(() => {
+          STATE.openEvent = null;
+          render();
+        }, 200);
+      } else {
+        resetVisuals();
+      }
+    }
+    startY = null;
+    dragging = false;
+  };
+
+  card.addEventListener('touchend', onEnd, { passive: true });
+  card.addEventListener('touchcancel', onEnd, { passive: true });
 }
 
 // Measure the live header + filter bar heights and publish them as CSS
@@ -419,6 +553,11 @@ function renderFilterBar() {
         Clear filters
       </button>
     ` : ''}
+    ${favCount > 0 ? `
+      <button data-action="prompt-clear-favorites" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm text-slate-500 hover:text-rose-700 whitespace-nowrap">
+        Clear favorites
+      </button>
+    ` : ''}
   `;
 
   return `
@@ -453,23 +592,48 @@ function renderFilterBar() {
 // ---------- List view ----------
 function renderList() {
   const monthEvents = eventsForMonth(STATE.month);
-  if (!monthEvents.length) {
+  const today = startOfDay(new Date());
+  const visibleEvents = STATE.showPastEvents
+    ? monthEvents
+    : monthEvents.filter(ev => startOfDay(new Date(ev.start)) >= today);
+  const hiddenPastCount = monthEvents.length - visibleEvents.length;
+
+  const eyeIcon = STATE.showPastEvents
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+
+  const toggleBtn = (STATE.showPastEvents || hiddenPastCount > 0)
+    ? `<div class="mb-3 flex justify-end">
+        <button data-action="toggle-past-events"
+          class="text-xs text-slate-500 hover:text-slate-900 flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-slate-100 transition">
+          ${eyeIcon}
+          ${STATE.showPastEvents ? 'Hide past events' : `Show past events${hiddenPastCount > 0 ? ` (${hiddenPastCount})` : ''}`}
+        </button>
+      </div>`
+    : '';
+
+  if (!visibleEvents.length) {
+    const emptyBody = monthEvents.length > 0
+      ? `<p class="text-base">No upcoming events this month.</p>
+         <button data-action="toggle-past-events" class="mt-3 text-sm text-slate-900 underline">Show ${monthEvents.length} past event${monthEvents.length === 1 ? '' : 's'}</button>`
+      : `<p class="text-base">No events match your filters this month.</p>
+         <button data-action="clear-filters" class="mt-3 text-sm text-slate-900 underline">Clear filters</button>`;
     return `
+      ${toggleBtn}
       <div class="text-center py-16 text-slate-500">
-        <p class="text-base">No events match your filters this month.</p>
-        <button data-action="clear-filters" class="mt-3 text-sm text-slate-900 underline">Clear filters</button>
+        ${emptyBody}
       </div>
     `;
   }
   const byDay = new Map();
-  for (const ev of monthEvents) {
+  for (const ev of visibleEvents) {
     const k = dateKey(new Date(ev.start));
     if (!byDay.has(k)) byDay.set(k, []);
     byDay.get(k).push(ev);
   }
   const days = [...byDay.keys()].sort();
-  const today = new Date();
   return `
+    ${toggleBtn}
     <div class="space-y-6">
       ${days.map(k => {
         const [y, m, d] = k.split('-').map(Number);
@@ -498,13 +662,43 @@ function renderShareBanner() {
   if (STATE.sharedFavorites.size === 0) return '';
   const n = STATE.sharedFavorites.size;
   const missing = STATE.sharedNotFound;
+  const newCount = [...STATE.sharedFavorites].filter(c => !STATE.favorites.has(c)).length;
   return `
-    <div class="mb-4 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+    <div class="mb-4 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
       <div class="text-sm text-yellow-900 leading-tight">
         <span class="font-semibold">Shared selection:</span> ${n} event${n === 1 ? '' : 's'} highlighted
         ${missing > 0 ? `<span class="block text-xs text-yellow-700 mt-0.5">${missing} event${missing === 1 ? '' : 's'} in this share no longer available</span>` : ''}
       </div>
-      <button data-action="clear-share" class="text-sm text-yellow-800 hover:text-yellow-900 font-medium underline whitespace-nowrap">Clear</button>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button data-action="save-shared" ${newCount === 0 ? 'disabled' : ''}
+          class="text-sm font-medium px-3 py-1.5 rounded-md transition whitespace-nowrap
+            ${newCount === 0
+              ? 'bg-yellow-100 text-yellow-500 cursor-not-allowed'
+              : 'bg-yellow-900 text-yellow-50 hover:bg-yellow-800'}">
+          ${newCount === 0 ? 'All saved' : `Save ${newCount > 1 ? `${newCount} ` : ''}to favorites`}
+        </button>
+        <button data-action="clear-share" class="text-sm text-yellow-800 hover:text-yellow-900 font-medium px-2 py-1 whitespace-nowrap">Clear</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderModal() {
+  if (STATE.modal !== 'clear-favorites') return '';
+  const n = STATE.favorites.size;
+  return `
+    <div data-action="close-modal" class="fixed inset-0 z-50 bg-slate-900/50"></div>
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+      <div role="dialog" aria-labelledby="modal-title" class="bg-white rounded-2xl shadow-xl max-w-sm w-full pointer-events-auto overflow-hidden">
+        <div class="px-5 py-4">
+          <h3 id="modal-title" class="text-base font-semibold text-slate-900 mb-1">Remove all favorites?</h3>
+          <p class="text-sm text-slate-600">This will remove ${n} event${n === 1 ? '' : 's'} from your favorites. You can re-favorite them anytime, but the current selection will be lost.</p>
+        </div>
+        <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button data-action="close-modal" class="px-4 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition">Cancel</button>
+          <button data-action="do-clear-favorites" class="px-4 py-2 rounded-md text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition">Remove all</button>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -867,10 +1061,10 @@ function renderEventDrawer(id) {
   ].filter(Boolean);
   return `
     <div class="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-end">
-      <div data-action="close-event" class="absolute inset-0 bg-slate-900/40"></div>
-      <div class="relative bg-white w-full sm:max-w-md sm:h-full sm:rounded-none rounded-t-2xl max-h-[88vh] sm:max-h-full overflow-y-auto shadow-xl">
+      <div data-action="close-event" data-drawer-backdrop class="absolute inset-0 bg-slate-900/40"></div>
+      <div data-drawer-card class="relative bg-white w-full sm:max-w-md sm:h-full sm:rounded-none rounded-t-2xl max-h-[88vh] sm:max-h-full overflow-y-auto overscroll-contain shadow-xl will-change-transform">
         ${ev.image ? `
-          <img src="${escapeHtml(ev.image)}" alt="" loading="lazy"
+          <img src="${escapeHtml(ev.image)}" alt="" loading="lazy" decoding="async"
             class="w-full h-48 sm:h-56 object-cover bg-slate-100"
             onerror="this.remove()" />
         ` : ''}
@@ -1001,6 +1195,9 @@ function handleAction(e) {
     case 'toggle-shared-filter':
       STATE.filters.sharedOnly = !STATE.filters.sharedOnly;
       render(); break;
+    case 'toggle-past-events':
+      STATE.showPastEvents = !STATE.showPastEvents;
+      render(); break;
     case 'share':
       doShare(); break;
     case 'clear-share':
@@ -1009,6 +1206,34 @@ function handleAction(e) {
       STATE.filters.sharedOnly = false;
       // Strip the hash from the URL but keep query params (filter state).
       history.replaceState(null, '', location.pathname + location.search);
+      render(); break;
+    case 'save-shared': {
+      let added = 0;
+      for (const code of STATE.sharedFavorites) {
+        if (!STATE.favorites.has(code)) {
+          STATE.favorites.add(code);
+          added++;
+        }
+      }
+      saveFavorites();
+      showToast(added > 0 ? `Saved ${added} to favorites` : 'Already in favorites');
+      render(); break;
+    }
+    case 'prompt-clear-favorites':
+      STATE.modal = 'clear-favorites';
+      render(); break;
+    case 'do-clear-favorites': {
+      const n = STATE.favorites.size;
+      STATE.favorites = new Set();
+      saveFavorites();
+      STATE.modal = null;
+      // Drop the favorites-only filter if it was on — nothing left to filter to.
+      STATE.filters.favoritesOnly = false;
+      showToast(`Removed ${n} favorite${n === 1 ? '' : 's'}`);
+      render(); break;
+    }
+    case 'close-modal':
+      STATE.modal = null;
       render(); break;
     case 'toggle-cat': {
       const c = el.dataset.cat;
@@ -1099,7 +1324,7 @@ function renderSourceAvatar(sourceId, size = 16) {
   const color = src.color || '#64748b';
   const font = Math.max(8, Math.round(size * 0.58));
   if (src.logo) {
-    return `<img src="${src.logo}" alt="${escapeHtml(src.name)}" loading="lazy"
+    return `<img src="${src.logo}" alt="${escapeHtml(src.name)}" loading="lazy" decoding="async"
       class="rounded-full flex-shrink-0 object-cover"
       style="width:${size}px;height:${size}px;background:${color}"
       onerror="this.outerHTML='<span class=\\'inline-flex items-center justify-center rounded-full flex-shrink-0 text-white font-bold leading-none\\' style=\\'width:${size}px;height:${size}px;background:${color};font-size:${font}px\\'>${letter}</span>'" />`;
