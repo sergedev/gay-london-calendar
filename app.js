@@ -174,7 +174,11 @@ async function init() {
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (STATE.modal) { STATE.modal = null; render(); return; }
-    if (STATE.openEvent) { STATE.openEvent = null; render(); }
+    if (STATE.openEvent) {
+      STATE.openEvent = null;
+      document.querySelector('[data-drawer-card]')?.closest('.fixed')?.remove();
+      syncBodyScrollLock();
+    }
   });
   // Global scroll listener: updates the sticky month indicator on month view
   window.addEventListener('scroll', () => updateStickyMonthLabel(), { passive: true });
@@ -361,7 +365,11 @@ function attachDrawerSwipeHandlers() {
         }
         setTimeout(() => {
           STATE.openEvent = null;
-          render();
+          // Surgical close: remove the drawer DOM and sync body scroll
+          // without a full re-render. A full render would rebuild the
+          // header, filter bar, and list — visibly flashing them.
+          card.closest('.fixed')?.remove();
+          syncBodyScrollLock();
         }, 200);
       } else {
         resetVisuals();
@@ -591,12 +599,18 @@ function renderFilterBar() {
 
 // ---------- List view ----------
 function renderList() {
-  const monthEvents = eventsForMonth(STATE.month);
   const today = startOfDay(new Date());
+  // When a share is active, the list spans every month/year the shared
+  // events touch — STATE.month is ignored. The user came here from a link
+  // pointing at a specific set of events, not a specific month.
+  const sharedMode = STATE.filters.sharedOnly && STATE.sharedFavorites.size > 0;
+  const baseEvents = sharedMode
+    ? STATE.events.filter(passesFilters).sort((a, b) => new Date(a.start) - new Date(b.start))
+    : eventsForMonth(STATE.month);
   const visibleEvents = STATE.showPastEvents
-    ? monthEvents
-    : monthEvents.filter(ev => startOfDay(new Date(ev.start)) >= today);
-  const hiddenPastCount = monthEvents.length - visibleEvents.length;
+    ? baseEvents
+    : baseEvents.filter(ev => startOfDay(new Date(ev.start)) >= today);
+  const hiddenPastCount = baseEvents.length - visibleEvents.length;
 
   const eyeIcon = STATE.showPastEvents
     ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
@@ -613,10 +627,11 @@ function renderList() {
     : '';
 
   if (!visibleEvents.length) {
-    const emptyBody = monthEvents.length > 0
-      ? `<p class="text-base">No upcoming events this month.</p>
-         <button data-action="toggle-past-events" class="mt-3 text-sm text-slate-900 underline">Show ${monthEvents.length} past event${monthEvents.length === 1 ? '' : 's'}</button>`
-      : `<p class="text-base">No events match your filters this month.</p>
+    const scopeLabel = sharedMode ? 'in this shared selection' : 'this month';
+    const emptyBody = baseEvents.length > 0
+      ? `<p class="text-base">No upcoming events ${scopeLabel}.</p>
+         <button data-action="toggle-past-events" class="mt-3 text-sm text-slate-900 underline">Show ${baseEvents.length} past event${baseEvents.length === 1 ? '' : 's'}</button>`
+      : `<p class="text-base">No events match your filters ${scopeLabel}.</p>
          <button data-action="clear-filters" class="mt-3 text-sm text-slate-900 underline">Clear filters</button>`;
     return `
       ${toggleBtn}
@@ -632,6 +647,8 @@ function renderList() {
     byDay.get(k).push(ev);
   }
   const days = [...byDay.keys()].sort();
+  let prevYear = null;
+  let prevMonth = null;
   return `
     ${toggleBtn}
     <div class="space-y-6">
@@ -640,7 +657,29 @@ function renderList() {
         const date = new Date(y, m-1, d);
         const isToday = isSameDay(date, today);
         const isPast = startOfDay(date) < startOfDay(today);
-        return `
+
+        let divider = '';
+        if (sharedMode) {
+          const isFirst = prevYear === null;
+          const yearChanged = !isFirst && y !== prevYear;
+          const monthChanged = !isFirst && (m !== prevMonth || y !== prevYear);
+          if (yearChanged) {
+            divider = `
+              <div class="pt-8 pb-2 mt-4 border-t-2 border-slate-300 flex items-baseline gap-3">
+                <div class="text-3xl font-bold text-slate-900 tracking-tight">${y}</div>
+                <div class="text-sm font-medium text-slate-500">${MONTHS[m-1]}</div>
+              </div>`;
+          } else if (monthChanged) {
+            divider = `
+              <div class="pt-5 pb-1 mt-2 border-t border-slate-200">
+                <div class="text-base font-semibold text-slate-700">${MONTHS[m-1]} ${y}</div>
+              </div>`;
+          }
+        }
+        prevYear = y;
+        prevMonth = m;
+
+        return divider + `
           <section>
             <h2 class="sticky z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-1.5 bg-slate-50/95 day-header text-xs font-semibold uppercase tracking-wider flex items-center gap-2
               ${isToday ? 'text-slate-900' : (isPast ? 'text-slate-400' : 'text-slate-500')}"
@@ -1258,7 +1297,10 @@ function handleAction(e) {
       render(); break;
     case 'close-event':
       STATE.openEvent = null;
-      render(); break;
+      // Surgical close — see swipe-close comment in attachDrawerSwipeHandlers.
+      document.querySelector('[data-drawer-card]')?.closest('.fixed')?.remove();
+      syncBodyScrollLock();
+      break;
     case 'open-month': {
       const y = parseInt(el.dataset.year, 10);
       const m = parseInt(el.dataset.month, 10);
