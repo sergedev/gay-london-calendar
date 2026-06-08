@@ -302,7 +302,90 @@ function render() {
     updateListVisibleMonth();
   }
   processInstagramEmbeds();
-  if (STATE.modal === 'contact') attachContactFormHandler();
+  if (STATE.modal === 'contact') {
+    attachContactFormHandler();
+    attachModalSwipeHandler();
+  }
+}
+
+// Swipe-down-to-dismiss for bottom-sheet modals. Same approach as the
+// event drawer: only fires when the modal card is at scrollTop=0, so
+// scrolling form content up still works naturally. Past the release
+// threshold the modal animates out and we close it surgically.
+function attachModalSwipeHandler() {
+  const card = document.querySelector('[data-modal-card]');
+  if (!card) return;
+  const backdrop = document.querySelector('[data-modal-backdrop]');
+  let startY = null;
+  let startScrollTop = 0;
+  let deltaY = 0;
+  let dragging = false;
+
+  const resetVisuals = () => {
+    card.style.transition = 'transform 0.2s ease-out';
+    card.style.transform = 'translateY(0)';
+    if (backdrop) {
+      backdrop.style.transition = 'opacity 0.2s ease-out';
+      backdrop.style.opacity = '';
+    }
+  };
+
+  card.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    startScrollTop = card.scrollTop;
+    deltaY = 0;
+    dragging = false;
+  }, { passive: true });
+
+  card.addEventListener('touchmove', (e) => {
+    if (startY === null) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0 && startScrollTop <= 0) {
+      if (!dragging) {
+        dragging = true;
+        card.style.transition = 'none';
+        if (backdrop) backdrop.style.transition = 'none';
+      }
+      deltaY = dy;
+      card.style.transform = `translateY(${deltaY}px)`;
+      if (backdrop) backdrop.style.opacity = String(Math.max(0, 1 - deltaY / 400));
+      e.preventDefault();
+    } else if (dragging) {
+      deltaY = Math.max(0, dy);
+      card.style.transform = `translateY(${deltaY}px)`;
+      if (backdrop) backdrop.style.opacity = String(Math.max(0, 1 - deltaY / 400));
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  const onEnd = () => {
+    if (startY === null) return;
+    if (dragging) {
+      const threshold = Math.min(120, card.offsetHeight * 0.25);
+      if (deltaY > threshold) {
+        card.style.transition = 'transform 0.2s ease-out';
+        card.style.transform = 'translateY(100%)';
+        if (backdrop) {
+          backdrop.style.transition = 'opacity 0.2s ease-out';
+          backdrop.style.opacity = '0';
+        }
+        setTimeout(() => {
+          STATE.modal = null;
+          card.closest('.fixed')?.parentElement?.querySelector('[data-modal-backdrop]')?.remove();
+          card.closest('.fixed')?.remove();
+          syncBodyScrollLock();
+        }, 200);
+      } else {
+        resetVisuals();
+      }
+    }
+    startY = null;
+    dragging = false;
+  };
+
+  card.addEventListener('touchend', onEnd, { passive: true });
+  card.addEventListener('touchcancel', onEnd, { passive: true });
 }
 
 // Instagram embed loader — script is fetched lazily the first time a
@@ -880,14 +963,17 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykawakg';
 
 function renderContactModal() {
   return `
-    <div data-action="close-modal" class="fixed inset-0 z-50 bg-slate-900/50"></div>
+    <div data-action="close-modal" data-modal-backdrop class="fixed inset-0 z-50 bg-slate-900/50"></div>
     <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
-      <div role="dialog" aria-labelledby="modal-title"
-        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[92vh] sm:max-h-[88vh] pointer-events-auto overflow-y-auto overscroll-contain">
-        <div class="sticky top-0 bg-white border-b border-slate-200 px-5 py-3.5 flex items-center justify-between gap-3">
+      <div data-modal-card role="dialog" aria-labelledby="modal-title"
+        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[92vh] sm:max-h-[88vh] pointer-events-auto overflow-y-auto overscroll-contain will-change-transform">
+        <div class="sm:hidden flex justify-center pt-2 pb-1">
+          <div class="w-10 h-1.5 rounded-full bg-slate-300"></div>
+        </div>
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-5 py-3.5 flex items-center justify-between gap-3 z-10">
           <h3 id="modal-title" class="text-base font-semibold text-slate-900">Get in touch</h3>
-          <button data-action="close-modal" class="text-slate-400 hover:text-slate-900 p-1" aria-label="Close">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <button data-action="close-modal" class="p-2 -mr-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition" aria-label="Close">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <form data-contact-form class="px-5 py-5 flex flex-col gap-4" method="POST" action="${FORMSPREE_ENDPOINT}">
