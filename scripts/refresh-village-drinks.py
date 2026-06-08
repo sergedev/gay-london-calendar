@@ -33,10 +33,7 @@ PROJECTION_MONTHS = 4  # months ahead to project (beyond any confirmed listings)
 
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-LINKS_BASE = {
-    'website': 'https://www.villagedrinks.com/',
-    'instagram': 'https://www.instagram.com/villagedrinksldn/',
-}
+SOURCE_WEBSITE = 'https://www.villagedrinks.com/'
 DEFAULT_LOCATION = 'Location revealed close to the event'
 PROJECTED_START_TIME = '18:30:00+01:00'  # matches the historic Village Drinks slot
 PROJECTED_END_TIME = '23:30:00+01:00'
@@ -150,7 +147,7 @@ def confirmed_from_jsonld(data, url):
         'image': _first_image(data.get('image')),
         'status': 'confirmed',
         'recurrence': 'last-thursday-monthly',
-        'links': {'tickets': url, **LINKS_BASE},
+        'links': {'tickets': url},
         'description': DESC_CONFIRMED,
         'soldOut': sold_out,
         'categories': ['social'],
@@ -170,10 +167,10 @@ def projection(year, month):
         'end': f'{iso}T{PROJECTED_END_TIME}',
         'location': DEFAULT_LOCATION,
         'price': None,
-        'url': LINKS_BASE['website'],
+        'url': SOURCE_WEBSITE,
         'status': 'projected',
         'recurrence': 'last-thursday-monthly',
-        'links': dict(LINKS_BASE),
+        'links': {},
         'description': DESC_PROJECTED,
         'categories': ['social'],
         'categoriesOverride': None,

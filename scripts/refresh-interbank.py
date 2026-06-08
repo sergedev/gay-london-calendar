@@ -48,10 +48,7 @@ DESC_PROJECTED = (
     "Projected based on the usual 3rd-Thursday-of-month cadence at 6pm. "
     "Venue varies — InterBank announces it via OutSavvy a few weeks ahead."
 )
-LINKS_BASE = {
-    'website': 'https://www.outsavvy.com/organiser/interbank-lgbt-network1',
-    'instagram': 'https://www.instagram.com/interbanklgbt/',
-}
+SOURCE_WEBSITE = 'https://www.outsavvy.com/organiser/interbank-lgbt-network1'
 
 
 def curl(url):
@@ -166,7 +163,7 @@ def confirmed_record(parsed):
         'image': parsed['image'] or None,
         'status': 'confirmed',
         'recurrence': 'third-thursday-monthly',
-        'links': {'tickets': parsed['url'], **LINKS_BASE},
+        'links': {'tickets': parsed['url']},
         'description': parsed['description'],
         'soldOut': False,
         'categories': ['social'],
@@ -189,11 +186,11 @@ def projection(year, month):
         'end':   end_dt.isoformat(timespec='seconds'),
         'location': PROJECTED_LOCATION,
         'price': None,
-        'url': LINKS_BASE['website'],
+        'url': SOURCE_WEBSITE,
         'image': None,
         'status': 'projected',
         'recurrence': 'third-thursday-monthly',
-        'links': dict(LINKS_BASE),
+        'links': {},
         'description': DESC_PROJECTED,
         'soldOut': False,
         'categories': ['social'],

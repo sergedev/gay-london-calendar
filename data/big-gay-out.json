@@ -12,8 +12,7 @@
     "status": "confirmed",
     "recurrence": "first-thursday-monthly",
     "links": {
-      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern",
-      "website": "https://nas.com/big-gay-out"
+      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern"
     },
     "description": "",
     "soldOut": false,
@@ -37,8 +36,7 @@
     "status": "confirmed",
     "recurrence": "first-thursday-monthly",
     "links": {
-      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern--1776872680204",
-      "website": "https://nas.com/big-gay-out"
+      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-at-the-cock-tavern--1776872680204"
     },
     "description": "",
     "soldOut": false,
@@ -138,7 +136,7 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 9,
+    "attendees": 10,
     "shortCode": "Ej"
   },
   {
@@ -167,12 +165,10 @@
     "end": "2026-07-02T23:30:00+01:00",
     "location": "The Cock Tavern, Kennington",
     "price": null,
-    "url": "https://nas.com/big-gay-out",
+    "url": "https://biggayout.org/",
     "status": "projected",
     "recurrence": "first-thursday-monthly",
-    "links": {
-      "website": "https://nas.com/big-gay-out"
-    },
+    "links": {},
     "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
     "categories": [
       "social"
@@ -264,12 +260,10 @@
     "end": "2026-08-06T23:30:00+01:00",
     "location": "The Cock Tavern, Kennington",
     "price": null,
-    "url": "https://nas.com/big-gay-out",
+    "url": "https://biggayout.org/",
     "status": "projected",
     "recurrence": "first-thursday-monthly",
-    "links": {
-      "website": "https://nas.com/big-gay-out"
-    },
+    "links": {},
     "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
     "categories": [
       "social"
@@ -285,12 +279,10 @@
     "end": "2026-09-03T23:30:00+01:00",
     "location": "The Cock Tavern, Kennington",
     "price": null,
-    "url": "https://nas.com/big-gay-out",
+    "url": "https://biggayout.org/",
     "status": "projected",
     "recurrence": "first-thursday-monthly",
-    "links": {
-      "website": "https://nas.com/big-gay-out"
-    },
+    "links": {},
     "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
     "categories": [
       "social"
@@ -324,12 +316,10 @@
     "end": "2026-10-01T23:30:00+01:00",
     "location": "The Cock Tavern, Kennington",
     "price": null,
-    "url": "https://nas.com/big-gay-out",
+    "url": "https://biggayout.org/",
     "status": "projected",
     "recurrence": "first-thursday-monthly",
-    "links": {
-      "website": "https://nas.com/big-gay-out"
-    },
+    "links": {},
     "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
     "categories": [
       "social"

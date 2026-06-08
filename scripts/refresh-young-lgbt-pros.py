@@ -129,7 +129,7 @@ def build_event(ev, apollo, url):
         'url': url,
         'image': image_url,
         'status': 'confirmed',
-        'links': {'tickets': url, 'website': GROUP_HOME},
+        'links': {'tickets': url},
         'description': desc,
         'soldOut': bool(ev.get('isSoldOut')),
         'categories': list(DEFAULT_CATEGORIES),

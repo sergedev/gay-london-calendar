@@ -31,6 +31,8 @@ const STATE = {
   sharedFavorites: new Set(),  // recipient mode: Set<shortCode> read from URL hash
   sharedNotFound: 0,           // count of f= codes in hash that didn't resolve
   modal: null,                 // null | 'clear-favorites'
+  monthsLoaded: 1,             // list view: how many months from STATE.month are rendered
+  displayedMonth: null,        // list view: tracks the topmost visible month for the header label
 };
 
 // Share URL category encoding: each category → single letter
@@ -135,6 +137,29 @@ function eventsForMonth(monthStart) {
     .sort((a, b) => new Date(a.start) - new Date(b.start));
 }
 
+// List view (multi-month): events from [start, start + monthCount).
+function eventsForMonthRange(startMonth, monthCount) {
+  const endMonth = addMonths(startMonth, monthCount);
+  return STATE.events.filter(ev => {
+    if (!passesFilters(ev)) return false;
+    const d = new Date(ev.start);
+    return d >= startMonth && d < endMonth;
+  }).sort((a, b) => new Date(a.start) - new Date(b.start));
+}
+
+// Is there at least one event past the currently-loaded range?
+function hasEventsAfter(month) {
+  return STATE.events.some(ev => passesFilters(ev) && new Date(ev.start) >= month);
+}
+
+// Reset list-view anchor to a specific month. Drops the lazy-loaded window
+// back to a single month and re-syncs the displayed-month tracker.
+function jumpListToMonth(newMonth) {
+  STATE.month = startOfMonth(newMonth);
+  STATE.displayedMonth = STATE.month;
+  STATE.monthsLoaded = 1;
+}
+
 // ---------- Init ----------
 async function init() {
   try {
@@ -181,7 +206,10 @@ async function init() {
     }
   });
   // Global scroll listener: updates the sticky month indicator on month view
-  window.addEventListener('scroll', () => updateStickyMonthLabel(), { passive: true });
+  window.addEventListener('scroll', () => {
+    updateStickyMonthLabel();
+    updateListVisibleMonth();
+  }, { passive: true });
 }
 
 function debounce(fn, ms) {
@@ -269,6 +297,29 @@ function render() {
   syncBodyScrollLock();
   updateLayoutVars();
   if (effView === 'month') updateStickyMonthLabel();
+  if (effView === 'list') {
+    attachListSentinelObserver();
+    updateListVisibleMonth();
+  }
+  processInstagramEmbeds();
+}
+
+// Instagram embed loader — script is fetched lazily the first time a
+// `.instagram-media` blockquote appears in the DOM. After load, the script
+// auto-processes existing blockquotes. On subsequent renders we manually
+// call `instgrm.Embeds.process()` to convert any new blockquotes.
+let _instagramScriptLoaded = false;
+function processInstagramEmbeds() {
+  if (!document.querySelector('.instagram-media')) return;
+  if (!_instagramScriptLoaded) {
+    _instagramScriptLoaded = true;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.instagram.com/embed.js';
+    document.body.appendChild(s);
+    return;
+  }
+  window.instgrm?.Embeds?.process();
 }
 
 // Freeze background scroll when a drawer or modal is open. Standard pattern:
@@ -383,6 +434,63 @@ function attachDrawerSwipeHandlers() {
   card.addEventListener('touchcancel', onEnd, { passive: true });
 }
 
+// Auto-load the next month when the bottom sentinel scrolls into view.
+// Re-attached on every render — the old observer's target is gone after the
+// innerHTML wipe, but we disconnect explicitly to release references.
+let _listSentinelObserver = null;
+function attachListSentinelObserver() {
+  if (_listSentinelObserver) {
+    _listSentinelObserver.disconnect();
+    _listSentinelObserver = null;
+  }
+  const sentinel = document.querySelector('[data-month-sentinel]');
+  if (!sentinel) return;
+  _listSentinelObserver = new IntersectionObserver((entries) => {
+    if (entries.some(e => e.isIntersecting)) {
+      STATE.monthsLoaded += 1;
+      render();
+    }
+  }, { rootMargin: '600px 0px' });
+  _listSentinelObserver.observe(sentinel);
+}
+
+// Update the header month label to whatever month is currently topmost in
+// the viewport (just below the sticky header band). Direct DOM update — no
+// re-render — so we can run this on every scroll without thrash.
+function updateListVisibleMonth() {
+  if (effectiveView() !== 'list') return;
+  const anchors = document.querySelectorAll('[data-month-anchor]');
+  if (anchors.length === 0) return;
+  // The "active" anchor is the bottommost one whose top has crossed the
+  // sticky-header band. If none has crossed yet (we're above the first),
+  // use the first anchor.
+  const bandBottom =
+    (document.getElementById('app-header')?.offsetHeight || 0) +
+    (document.getElementById('filter-bar')?.offsetHeight || 0) +
+    20;
+  let active = anchors[0];
+  for (const a of anchors) {
+    const top = a.getBoundingClientRect().top;
+    if (top <= bandBottom) active = a;
+    else break;
+  }
+  const ym = active.dataset.monthAnchor;
+  if (!ym) return;
+  const [y, m] = ym.split('-').map(Number);
+  const newMonth = new Date(y, m, 1);
+  if (!STATE.displayedMonth || newMonth.getTime() !== STATE.displayedMonth.getTime()) {
+    STATE.displayedMonth = newMonth;
+    const label = `${MONTHS[m]} ${y}`;
+    document.querySelectorAll('[data-list-title]').forEach(el => { el.textContent = label; });
+    // Mirror the Today-button visibility against the now-displayed month.
+    const now = new Date();
+    const onToday = newMonth.getMonth() === now.getMonth() && newMonth.getFullYear() === now.getFullYear();
+    document.querySelectorAll('[data-today-wrapper]').forEach(el => {
+      el.classList.toggle('hidden', onToday);
+    });
+  }
+}
+
 // Measure the live header + filter bar heights and publish them as CSS
 // variables, so sticky offsets adapt automatically when the mobile header
 // becomes two rows or the mobile filter bar expands. A ResizeObserver
@@ -408,19 +516,27 @@ function updateLayoutVars() {
 }
 
 function renderHeader(effView, isDesktop) {
+  // In list view, the title tracks whatever month is currently topmost in
+  // view (displayedMonth) — not the anchor. Falls back to STATE.month
+  // before the observer has reported anything.
+  const listLabelMonth = STATE.displayedMonth || STATE.month;
   const titleText = effView === 'year'
     ? `${STATE.month.getFullYear()}`
     : effView === 'month'
       ? `${MONTHS[STATE.month.getMonth()].slice(0,3)}–${MONTHS[addMonths(STATE.month, MONTHS_AHEAD-1).getMonth()].slice(0,3)} ${STATE.month.getFullYear()}`
-      : `${MONTHS[STATE.month.getMonth()]} ${STATE.month.getFullYear()}`;
+      : `${MONTHS[listLabelMonth.getMonth()]} ${listLabelMonth.getFullYear()}`;
   const prevLabel = effView === 'year' ? 'Previous year' : 'Previous month';
   const nextLabel = effView === 'year' ? 'Next year' : 'Next month';
 
-  // "Today" button only appears when not already on today's view.
+  // "Today" button only appears when not already on today's view. In list
+  // view this is based on displayedMonth (what's actually visible) so the
+  // button appears as soon as you scroll into a non-current month — even
+  // though STATE.month (the anchor) is unchanged.
   const now = new Date();
+  const monthForTodayCheck = effView === 'list' ? (STATE.displayedMonth || STATE.month) : STATE.month;
   const onTodayPeriod = effView === 'year'
     ? STATE.month.getFullYear() === now.getFullYear()
-    : (STATE.month.getMonth() === now.getMonth() && STATE.month.getFullYear() === now.getFullYear());
+    : (monthForTodayCheck.getMonth() === now.getMonth() && monthForTodayCheck.getFullYear() === now.getFullYear());
   const showTodayBtn = !onTodayPeriod;
 
   // Share button visible when there's a selection worth sharing.
@@ -446,11 +562,11 @@ function renderHeader(effView, isDesktop) {
     </button>`;
   const monthLabelBtnDesktop = `
     <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 hover:bg-slate-50 whitespace-nowrap">
-      ${titleText}
+      <span data-list-title>${titleText}</span>
     </button>`;
   const monthLabelBtnMobile = `
     <button data-action="today" class="flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold text-center border border-slate-200 hover:bg-slate-50">
-      ${titleText}
+      <span data-list-title>${titleText}</span>
     </button>`;
   const viewToggle = isDesktop ? `
     <div class="flex rounded-lg border border-slate-200 p-0.5 bg-white">
@@ -476,7 +592,7 @@ function renderHeader(effView, isDesktop) {
           </div>
           <!-- Desktop only: full nav inline with title -->
           <div class="hidden sm:flex items-center gap-2">
-            ${showTodayBtn ? todayBtn : ''}
+            <span data-today-wrapper class="${showTodayBtn ? '' : 'hidden'}">${todayBtn}</span>
             ${prevBtn}
             ${monthLabelBtnDesktop}
             ${nextBtn}
@@ -489,7 +605,7 @@ function renderHeader(effView, isDesktop) {
           ${prevBtn}
           ${monthLabelBtnMobile}
           ${nextBtn}
-          ${showTodayBtn ? todayBtn : ''}
+          <span data-today-wrapper class="${showTodayBtn ? '' : 'hidden'}">${todayBtn}</span>
         </div>
       </div>
     </header>
@@ -604,13 +720,16 @@ function renderList() {
   // events touch — STATE.month is ignored. The user came here from a link
   // pointing at a specific set of events, not a specific month.
   const sharedMode = STATE.filters.sharedOnly && STATE.sharedFavorites.size > 0;
+  const multiMonth = sharedMode || STATE.monthsLoaded > 1;
   const baseEvents = sharedMode
     ? STATE.events.filter(passesFilters).sort((a, b) => new Date(a.start) - new Date(b.start))
-    : eventsForMonth(STATE.month);
+    : eventsForMonthRange(STATE.month, STATE.monthsLoaded);
   const visibleEvents = STATE.showPastEvents
     ? baseEvents
     : baseEvents.filter(ev => startOfDay(new Date(ev.start)) >= today);
   const hiddenPastCount = baseEvents.length - visibleEvents.length;
+  // Sentinel only relevant outside shared mode and when more months exist.
+  const canLoadMore = !sharedMode && hasEventsAfter(addMonths(STATE.month, STATE.monthsLoaded));
 
   const eyeIcon = STATE.showPastEvents
     ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
@@ -638,6 +757,7 @@ function renderList() {
       <div class="text-center py-16 text-slate-500">
         ${emptyBody}
       </div>
+      ${canLoadMore ? '<div data-month-sentinel class="h-1"></div>' : ''}
     `;
   }
   const byDay = new Map();
@@ -658,23 +778,24 @@ function renderList() {
         const isToday = isSameDay(date, today);
         const isPast = startOfDay(date) < startOfDay(today);
 
-        let divider = '';
-        if (sharedMode) {
-          const isFirst = prevYear === null;
-          const yearChanged = !isFirst && y !== prevYear;
-          const monthChanged = !isFirst && (m !== prevMonth || y !== prevYear);
-          if (yearChanged) {
-            divider = `
-              <div class="pt-8 pb-2 mt-4 border-t-2 border-slate-300 flex items-baseline gap-3">
+        const isFirst = prevYear === null;
+        const monthChanged = isFirst || m !== prevMonth || y !== prevYear;
+        const yearChanged = !isFirst && y !== prevYear;
+        // Anchor marker for the visible-month tracker observer — present at
+        // the start of every month, even when there's no visible divider.
+        const anchor = monthChanged
+          ? `<div data-month-anchor="${y}-${m-1}" aria-hidden="true"></div>`
+          : '';
+        let divider = anchor;
+        if (multiMonth && monthChanged && !isFirst) {
+          divider += yearChanged
+            ? `<div class="pt-8 pb-2 mt-4 border-t-2 border-slate-300 flex items-baseline gap-3">
                 <div class="text-3xl font-bold text-slate-900 tracking-tight">${y}</div>
                 <div class="text-sm font-medium text-slate-500">${MONTHS[m-1]}</div>
-              </div>`;
-          } else if (monthChanged) {
-            divider = `
-              <div class="pt-5 pb-1 mt-2 border-t border-slate-200">
+              </div>`
+            : `<div class="pt-5 pb-1 mt-2 border-t border-slate-200">
                 <div class="text-base font-semibold text-slate-700">${MONTHS[m-1]} ${y}</div>
               </div>`;
-          }
         }
         prevYear = y;
         prevMonth = m;
@@ -694,6 +815,7 @@ function renderList() {
         `;
       }).join('')}
     </div>
+    ${canLoadMore ? '<div data-month-sentinel class="h-1 mt-8"></div>' : ''}
   `;
 }
 
@@ -1094,10 +1216,18 @@ function renderEventDrawer(id) {
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
   const links = getLinks(ev);
+  // Dedupe by URL — when a source has no separate website (website === IG),
+  // the Instagram label wins and the duplicate "Website" button is dropped.
+  const seenHrefs = new Set();
   const secondaryLinks = [
     links.instagram ? { label: 'Instagram', href: links.instagram } : null,
     links.website   ? { label: 'Website',   href: links.website   } : null,
-  ].filter(Boolean);
+  ].filter(l => {
+    if (!l) return false;
+    if (seenHrefs.has(l.href)) return false;
+    seenHrefs.add(l.href);
+    return true;
+  });
   return `
     <div class="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-end">
       <div data-action="close-event" data-drawer-backdrop class="absolute inset-0 bg-slate-900/40"></div>
@@ -1173,6 +1303,27 @@ function renderEventDrawer(id) {
               `).join('')}
             </div>
           ` : ''}
+          ${(() => {
+            // Curated Instagram post embed, opted-in per source via
+            // `instagramFeaturedByTitle: { "<title>": "<post-id>" }`.
+            // Carousels (multi-photo posts) and reels both work through
+            // the same /p/<id>/ URL — the embed widget handles paging
+            // through carousel images inline.
+            const postId = src?.instagramFeaturedByTitle?.[ev.title];
+            if (!postId) return '';
+            const permalink = `https://www.instagram.com/p/${postId}/`;
+            return `
+              <div class="mt-5 -mx-5 px-5 pt-5 border-t border-slate-100">
+                <p class="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">From their Instagram</p>
+                <blockquote class="instagram-media" data-instgrm-permalink="${permalink}" data-instgrm-version="14"
+                  style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0; max-width:540px; min-width:280px; padding:0; width:100%;">
+                  <div style="padding:16px;">
+                    <a href="${permalink}" target="_blank" rel="noopener" style="color:#0f172a; font-size:14px;">View on Instagram</a>
+                  </div>
+                </blockquote>
+              </div>
+            `;
+          })()}
         </div>
       </div>
     </div>
@@ -1192,13 +1343,30 @@ function handleAction(e) {
   const view = effectiveView();
   switch (action) {
     case 'prev-period':
-      STATE.month = view === 'year' ? addYears(STATE.month, -1) : addMonths(STATE.month, -1);
-      render(); break;
+      if (view === 'list') {
+        // Base on what's actually visible at the top, not the anchor.
+        jumpListToMonth(addMonths(STATE.displayedMonth || STATE.month, -1));
+        render();
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      } else {
+        STATE.month = view === 'year' ? addYears(STATE.month, -1) : addMonths(STATE.month, -1);
+        render();
+      }
+      break;
     case 'next-period':
-      STATE.month = view === 'year' ? addYears(STATE.month,  1) : addMonths(STATE.month,  1);
-      render(); break;
+      if (view === 'list') {
+        jumpListToMonth(addMonths(STATE.displayedMonth || STATE.month, 1));
+        render();
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      } else {
+        STATE.month = view === 'year' ? addYears(STATE.month,  1) : addMonths(STATE.month,  1);
+        render();
+      }
+      break;
     case 'today': {
-      STATE.month = view === 'year' ? new Date(new Date().getFullYear(), 0, 1) : startOfMonth(new Date());
+      const todayMonth = startOfMonth(new Date());
+      if (view === 'list') jumpListToMonth(todayMonth);
+      else STATE.month = view === 'year' ? new Date(new Date().getFullYear(), 0, 1) : todayMonth;
       render();
       // In list view, also scroll to today's section. Other views just scroll to top.
       setTimeout(() => {
@@ -1311,7 +1479,7 @@ function handleAction(e) {
     case 'open-day': {
       const k = el.dataset.date;
       const [y, m, d] = k.split('-').map(Number);
-      STATE.month = new Date(y, m-1, 1);
+      jumpListToMonth(new Date(y, m-1, 1));
       STATE.view = 'list';
       render();
       setTimeout(() => {
@@ -1353,10 +1521,14 @@ function isSoldOut(ev) {
 // data (TRYBZ/BGO) without the explicit links object keeps working.
 function getLinks(ev) {
   const l = ev.links || {};
+  const src = STATE.sources[ev.source] || {};
+  // Event-level overrides source-level. Source-level fills in defaults
+  // (e.g. website / instagram) so individual events don't need to repeat
+  // the same social links.
   return {
     tickets: l.tickets || (isProjected(ev) ? null : ev.url),
-    website: l.website || null,
-    instagram: l.instagram || null,
+    website: l.website || src.website || null,
+    instagram: l.instagram || src.instagram || null,
   };
 }
 function renderSourceAvatar(sourceId, size = 16) {

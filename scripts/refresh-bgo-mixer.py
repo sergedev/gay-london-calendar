@@ -52,9 +52,6 @@ MIXER_BASE_TITLE = 'Monthly Mixer at The Cock Tavern'
 PROJECTED_START_HM = (19, 30)  # 7:30 PM London local
 PROJECTED_END_HM   = (23, 30)  # 11:30 PM London local
 
-LINKS_BASE = {
-    'website': 'https://nas.com/big-gay-out',
-}
 DESC_PROJECTED = (
     "Projected based on the usual first-Thursday-of-month cadence. "
     "Tickets typically released a few weeks ahead."
@@ -175,7 +172,7 @@ def confirmed_from_event_info(ei, url):
         'image': ei.get('bannerImg'),
         'status': 'confirmed',
         'recurrence': 'first-thursday-monthly',
-        'links': {'tickets': url, **LINKS_BASE},
+        'links': {'tickets': url},
         'description': ei.get('description') or '',
         'soldOut': bool(ei.get('isSoldOut')),
         'categories': ['social'],
@@ -207,10 +204,10 @@ def projection(year, month):
         'end':   end_dt.isoformat(timespec='seconds'),
         'location': VENUE,
         'price': None,
-        'url': LINKS_BASE['website'],
+        'url': 'https://biggayout.org/',
         'status': 'projected',
         'recurrence': 'first-thursday-monthly',
-        'links': dict(LINKS_BASE),
+        'links': {},
         'description': DESC_PROJECTED,
         'categories': ['social'],
         'categoriesOverride': None,

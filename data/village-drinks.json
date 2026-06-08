@@ -12,9 +12,7 @@
     "status": "confirmed",
     "recurrence": "last-thursday-monthly",
     "links": {
-      "tickets": "https://www.eventbrite.co.uk/e/village-drinks-a-unique-evening-of-social-networking-for-gay-professionals-tickets-1990270069354",
-      "website": "https://www.villagedrinks.com/",
-      "instagram": "https://www.instagram.com/villagedrinksldn/"
+      "tickets": "https://www.eventbrite.co.uk/e/village-drinks-a-unique-evening-of-social-networking-for-gay-professionals-tickets-1990270069354"
     },
     "description": "Meaningful connections. Hundreds of like-minded guys, in one special venue.",
     "soldOut": false,
@@ -35,10 +33,7 @@
     "url": "https://www.villagedrinks.com/",
     "status": "projected",
     "recurrence": "last-thursday-monthly",
-    "links": {
-      "website": "https://www.villagedrinks.com/",
-      "instagram": "https://www.instagram.com/villagedrinksldn/"
-    },
+    "links": {},
     "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
     "categories": [
       "social"
@@ -57,10 +52,7 @@
     "url": "https://www.villagedrinks.com/",
     "status": "projected",
     "recurrence": "last-thursday-monthly",
-    "links": {
-      "website": "https://www.villagedrinks.com/",
-      "instagram": "https://www.instagram.com/villagedrinksldn/"
-    },
+    "links": {},
     "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
     "categories": [
       "social"
@@ -79,10 +71,7 @@
     "url": "https://www.villagedrinks.com/",
     "status": "projected",
     "recurrence": "last-thursday-monthly",
-    "links": {
-      "website": "https://www.villagedrinks.com/",
-      "instagram": "https://www.instagram.com/villagedrinksldn/"
-    },
+    "links": {},
     "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
     "categories": [
       "social"
@@ -101,10 +90,7 @@
     "url": "https://www.villagedrinks.com/",
     "status": "projected",
     "recurrence": "last-thursday-monthly",
-    "links": {
-      "website": "https://www.villagedrinks.com/",
-      "instagram": "https://www.instagram.com/villagedrinksldn/"
-    },
+    "links": {},
     "description": "Projected based on the usual last-Thursday-of-month cadence. Tickets typically released a few days after the prior month's event.",
     "categories": [
       "social"

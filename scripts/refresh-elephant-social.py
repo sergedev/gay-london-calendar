@@ -37,10 +37,7 @@ TITLE = 'Elephant Social Monthly Mixer'
 PROJECTED_START_HM = (20, 0)   # 8:00 PM London local
 PROJECTED_END_HM   = (23, 30)  # ~11:30 PM London local — rough guess
 
-LINKS_BASE = {
-    'website': 'https://www.instagram.com/elephant_social_london',
-    'instagram': 'https://www.instagram.com/elephant_social_london',
-}
+SOURCE_INSTAGRAM = 'https://www.instagram.com/elephant_social_london'
 DESC_PROJECTED = (
     "Projected based on the usual last-Friday-of-month cadence. Elephant "
     "Social announces the mixer ad-hoc on Instagram a few days ahead — "
@@ -83,11 +80,11 @@ def projection(year, month):
         'end':   end_dt.isoformat(timespec='seconds'),
         'location': VENUE,
         'price': None,
-        'url': LINKS_BASE['instagram'],
+        'url': SOURCE_INSTAGRAM,
         'image': None,
         'status': 'projected',
         'recurrence': 'last-friday-monthly',
-        'links': dict(LINKS_BASE),
+        'links': {},
         'description': DESC_PROJECTED,
         'soldOut': False,
         'categories': ['social'],

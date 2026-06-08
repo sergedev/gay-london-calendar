@@ -47,10 +47,7 @@ LONDON = ZoneInfo('Europe/London')
 VENUE_DEFAULT = 'The Old School Yard, 109-111 Long Ln, London'
 PROJECTED_START_HM = (18, 0)
 PROJECTED_END_HM   = (23, 30)
-LINKS_BASE = {
-    'website': 'https://gaymersinc.com/events/',
-    'instagram': 'https://www.instagram.com/gaymersinc/',
-}
+SOURCE_WEBSITE = 'https://gaymersinc.com/events/'
 DESC_PROJECTED = (
     "Projected based on the usual 3rd-Wednesday-of-month cadence at TOSY "
     "(The Old School Yard). Specific theme/tournament announced closer to "
@@ -155,7 +152,7 @@ def confirmed_record(item):
         'image': item.get('image') if isinstance(item.get('image'), str) else None,
         'status': 'confirmed',
         'recurrence': 'third-wednesday-monthly',
-        'links': {'tickets': url, **LINKS_BASE},
+        'links': {'tickets': url},
         'description': html_mod.unescape((item.get('description') or '').strip()),
         'soldOut': (item.get('offers', {}) or {}).get('availability') == 'http://schema.org/SoldOut',
         'categories': categorise(title),
@@ -178,11 +175,11 @@ def projection(year, month):
         'end':   end_dt.isoformat(timespec='seconds'),
         'location': VENUE_DEFAULT,
         'price': None,
-        'url': LINKS_BASE['website'],
+        'url': SOURCE_WEBSITE,
         'image': None,
         'status': 'projected',
         'recurrence': 'third-wednesday-monthly',
-        'links': dict(LINKS_BASE),
+        'links': {},
         'description': DESC_PROJECTED,
         'soldOut': False,
         'categories': ['games'],

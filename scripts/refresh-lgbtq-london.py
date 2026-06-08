@@ -167,7 +167,7 @@ def build_event(ev, apollo, url):
         'url': url,
         'image': image_url,
         'status': 'confirmed',
-        'links': {'tickets': url, 'website': 'https://www.meetup.com/lgbtq-london/'},
+        'links': {'tickets': url},
         'description': desc,
         'soldOut': bool(ev.get('isSoldOut')),
         'categories': categorise(title),

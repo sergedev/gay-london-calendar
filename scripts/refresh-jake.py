@@ -38,11 +38,6 @@ INDEX_URL = 'https://events.jakeldn.com/events'
 UA = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
-LINKS_BASE = {
-    'website': 'https://events.jakeldn.com/events',
-    'instagram': 'https://www.instagram.com/letsdojake/',
-}
-
 # Every JAKE event is a social by nature (parties, mingles, BBQs, themed
 # nights). Categorise() always includes 'social' as the base tag, then layers
 # on extra tags from the title.
@@ -156,7 +151,7 @@ def build_event(jsonld, slug, url, html_page):
         'url': url,
         'image': image or None,
         'status': 'confirmed',
-        'links': {'tickets': url, **LINKS_BASE},
+        'links': {'tickets': url},
         'description': description,
         'soldOut': False,
         'categories': categorise(title),
