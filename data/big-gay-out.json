@@ -98,7 +98,7 @@
       "arts"
     ],
     "categoriesOverride": null,
-    "soldOut": false,
+    "soldOut": true,
     "attendeeLimit": 7,
     "attendees": 7,
     "shortCode": "Mm"

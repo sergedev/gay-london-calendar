@@ -174,7 +174,10 @@ def confirmed_from_event_info(ei, url):
         'recurrence': 'first-thursday-monthly',
         'links': {'tickets': url},
         'description': ei.get('description') or '',
-        'soldOut': bool(ei.get('isSoldOut')),
+        # nas.com's isSoldOut only flips true on explicit host close. Events
+        # that fill organically still report isSoldOut=false, so also flag
+        # sold-out when attendance reaches capacity.
+        'soldOut': bool(ei.get('isSoldOut')) or _is_capacity_full(ei),
         'categories': ['social'],
         'categoriesOverride': None,
     }
@@ -187,6 +190,19 @@ def confirmed_from_event_info(ei, url):
         if ei.get('isCapacitySet') and ei.get('attendeeLimit'):
             rec['attendeeLimit'] = int(ei['attendeeLimit'])
     return rec
+
+
+def _is_capacity_full(ei):
+    going = ei.get('goingAttendees')
+    if going is None:
+        going = ei.get('attendees')
+    limit = ei.get('attendeeLimit') or 0
+    return (
+        bool(ei.get('isCapacitySet'))
+        and limit > 0
+        and going is not None
+        and int(going) >= int(limit)
+    )
 
 
 def projection(year, month):

@@ -79,9 +79,23 @@ def extract_price(ei):
 
 def build_enrichment(ei):
     """Return a dict of just the fields this script controls."""
+    # nas.com's `isSoldOut` only flips true when the host explicitly closes
+    # registration. Events that fill organically (last RSVP takes the final
+    # seat) keep `isSoldOut: false` while the rendered page shows "Sold out"
+    # — the frontend infers it from attendance >= capacity. Mirror that here.
+    going = ei.get('goingAttendees')
+    if going is None:
+        going = ei.get('attendees')
+    limit = ei.get('attendeeLimit') or 0
+    capacity_full = (
+        bool(ei.get('isCapacitySet'))
+        and limit > 0
+        and going is not None
+        and int(going) >= int(limit)
+    )
     enrich = {
         'price': extract_price(ei),
-        'soldOut': bool(ei.get('isSoldOut')),
+        'soldOut': bool(ei.get('isSoldOut')) or capacity_full,
     }
     if ei.get('bannerImg'):
         enrich['image'] = ei['bannerImg']

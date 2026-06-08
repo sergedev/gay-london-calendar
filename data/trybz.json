@@ -51,7 +51,7 @@
     ],
     "categoriesOverride": null,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779618906034_5ee8aa3f-d7b4-4381-bac4-dc0b67c3969d_GV",
-    "soldOut": false,
+    "soldOut": true,
     "attendeeLimit": 17,
     "attendees": 17,
     "shortCode": "O0"
@@ -129,7 +129,7 @@
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780063584386_10dae1f7-5ffd-4086-a4d4-8dd96a5a5fed_GV",
     "soldOut": false,
     "attendeeLimit": 32,
-    "attendees": 30,
+    "attendees": 31,
     "shortCode": "C6"
   },
   {
@@ -165,7 +165,7 @@
     ],
     "categoriesOverride": null,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1766943239287_0512abbf-5b27-43be-ab96-3ef9441b3206_GV",
-    "soldOut": false,
+    "soldOut": true,
     "attendeeLimit": 10,
     "attendees": 10,
     "shortCode": "0p"
@@ -186,7 +186,7 @@
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779024625309_e597bfa9-7f43-4f7a-9708-fc111f6dbbc9_GV",
     "soldOut": false,
     "attendeeLimit": 120,
-    "attendees": 109,
+    "attendees": 111,
     "shortCode": "49"
   },
   {
@@ -279,7 +279,7 @@
     ],
     "categoriesOverride": null,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1775661051335_6a735347-0bd8-4cd9-aa45-7335e2f22e78_GV",
-    "soldOut": false,
+    "soldOut": true,
     "attendeeLimit": 11,
     "attendees": 11,
     "shortCode": "Xj"
@@ -393,7 +393,7 @@
     ],
     "categoriesOverride": null,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1777023102073_cd0e578f-7cdc-4d76-bb4c-c6178a23abaf_GV",
-    "soldOut": false,
+    "soldOut": true,
     "attendeeLimit": 11,
     "attendees": 11,
     "shortCode": "LP"

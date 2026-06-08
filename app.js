@@ -30,7 +30,7 @@ const STATE = {
   favorites: new Set(),        // local: Set<shortCode> persisted in localStorage
   sharedFavorites: new Set(),  // recipient mode: Set<shortCode> read from URL hash
   sharedNotFound: 0,           // count of f= codes in hash that didn't resolve
-  modal: null,                 // null | 'clear-favorites'
+  modal: null,                 // null | 'clear-favorites' | 'contact'
   monthsLoaded: 1,             // list view: how many months from STATE.month are rendered
   displayedMonth: null,        // list view: tracks the topmost visible month for the header label
 };
@@ -302,6 +302,7 @@ function render() {
     updateListVisibleMonth();
   }
   processInstagramEmbeds();
+  if (STATE.modal === 'contact') attachContactFormHandler();
 }
 
 // Instagram embed loader — script is fetched lazily the first time a
@@ -548,6 +549,11 @@ function renderHeader(effView, isDesktop) {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     </button>` : '';
 
+  const contactBtn = `
+    <button data-action="open-contact" class="p-2 rounded-lg hover:bg-slate-100 text-slate-700" title="Submit an event / get in touch" aria-label="Contact">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </button>`;
+
   const todayBtn = `
     <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-300 hover:bg-slate-50 text-slate-700 whitespace-nowrap">
       Today
@@ -598,6 +604,7 @@ function renderHeader(effView, isDesktop) {
             ${nextBtn}
           </div>
           ${shareBtn}
+          ${contactBtn}
           ${viewToggle}
         </div>
         <!-- Row 2 (mobile only): prev / month label / next  (+ Today if not on today) -->
@@ -845,7 +852,12 @@ function renderShareBanner() {
 }
 
 function renderModal() {
-  if (STATE.modal !== 'clear-favorites') return '';
+  if (STATE.modal === 'clear-favorites') return renderClearFavoritesModal();
+  if (STATE.modal === 'contact') return renderContactModal();
+  return '';
+}
+
+function renderClearFavoritesModal() {
   const n = STATE.favorites.size;
   return `
     <div data-action="close-modal" class="fixed inset-0 z-50 bg-slate-900/50"></div>
@@ -862,6 +874,117 @@ function renderModal() {
       </div>
     </div>
   `;
+}
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykawakg';
+
+function renderContactModal() {
+  return `
+    <div data-action="close-modal" class="fixed inset-0 z-50 bg-slate-900/50"></div>
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+      <div role="dialog" aria-labelledby="modal-title"
+        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[92vh] sm:max-h-[88vh] pointer-events-auto overflow-y-auto overscroll-contain">
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-5 py-3.5 flex items-center justify-between gap-3">
+          <h3 id="modal-title" class="text-base font-semibold text-slate-900">Get in touch</h3>
+          <button data-action="close-modal" class="text-slate-400 hover:text-slate-900 p-1" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <form data-contact-form class="px-5 py-5 flex flex-col gap-4" method="POST" action="${FORMSPREE_ENDPOINT}">
+          <p class="text-sm text-slate-600 -mt-1">Submit an event, flag one that shouldn't be listed, ask about an existing event, or just send feedback.</p>
+
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true"
+            class="absolute left-[-9999px] w-px h-px opacity-0 pointer-events-none" />
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium text-slate-700">What's this about? <span class="text-rose-500">*</span></span>
+            <select name="topic" required
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400">
+              <option value="">Pick one…</option>
+              <option value="Submit an event">Submit an event</option>
+              <option value="Talk about an existing event">Talk about an existing event</option>
+              <option value="Remove an event">Remove an event from the calendar</option>
+              <option value="General feedback">General feedback</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium text-slate-700">Your name <span class="text-rose-500">*</span></span>
+            <input type="text" name="name" required autocomplete="name" placeholder="Jamie"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400" />
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium text-slate-700">Your email <span class="text-rose-500">*</span></span>
+            <input type="email" name="email" required autocomplete="email" placeholder="jamie@example.com"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400" />
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium text-slate-700">Event link <span class="text-slate-400 font-normal">(if applicable)</span></span>
+            <input type="url" name="event_link" autocomplete="off" placeholder="https://www.instagram.com/p/…"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400" />
+          </label>
+
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-medium text-slate-700">Message <span class="text-rose-500">*</span></span>
+            <textarea name="message" rows="5" required placeholder="Tell me what's up…"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 resize-y min-h-[120px]"></textarea>
+          </label>
+
+          <input type="hidden" name="_subject" value="Gay London Calendar — contact" />
+
+          <p data-contact-error hidden class="text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">Something went wrong. Please try again or email me directly.</p>
+
+          <button type="submit"
+            class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed">
+            Send message
+          </button>
+        </form>
+        <div data-contact-success hidden class="px-5 py-12 text-center">
+          <div class="mx-auto w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <h4 class="text-base font-semibold text-slate-900 mb-1">Message sent</h4>
+          <p class="text-sm text-slate-600 mb-5">Thanks — I'll get back to you as soon as I can.</p>
+          <button data-action="close-modal" class="px-4 py-2 rounded-md text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function attachContactFormHandler() {
+  const form = document.querySelector('[data-contact-form]');
+  if (!form) return;
+  const errorEl = document.querySelector('[data-contact-error]');
+  const successEl = document.querySelector('[data-contact-success]');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn?.textContent || 'Send message';
+    if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
+    errorEl?.setAttribute('hidden', '');
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' },
+      });
+      if (res.ok) {
+        form.reset();
+        form.setAttribute('hidden', '');
+        successEl?.removeAttribute('hidden');
+      } else {
+        errorEl?.removeAttribute('hidden');
+        if (btn) { btn.textContent = originalText; btn.disabled = false; }
+      }
+    } catch {
+      errorEl?.removeAttribute('hidden');
+      if (btn) { btn.textContent = originalText; btn.disabled = false; }
+    }
+  });
 }
 
 function showToast(msg) {
@@ -1428,6 +1551,9 @@ function handleAction(e) {
     }
     case 'prompt-clear-favorites':
       STATE.modal = 'clear-favorites';
+      render(); break;
+    case 'open-contact':
+      STATE.modal = 'contact';
       render(); break;
     case 'do-clear-favorites': {
       const n = STATE.favorites.size;
