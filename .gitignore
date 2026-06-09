@@ -16,3 +16,6 @@ venv/
 # Local data dumps / scratch
 /tmp/
 *.log
+
+# Refresh-loop timestamp (runtime state, not source)
+.last-refresh
