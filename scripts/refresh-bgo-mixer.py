@@ -151,6 +151,15 @@ def _extract_price(ei):
     return 'Free' if top == 0 else _format_gbp(top)
 
 
+def _canonical_mixer_id(start_iso):
+    """Stable month-keyed id for the mixer series. Both projected and
+    confirmed entries in a given month share this id, so a confirmed scrape
+    overwrites the projection in place — preserving any short-codes and
+    share links issued against the projection."""
+    dt = datetime.fromisoformat(start_iso.replace('Z', '+00:00')).astimezone(LONDON)
+    return f'bgo-mixer-{dt.year:04d}-{dt.month:02d}'
+
+
 def confirmed_from_event_info(ei, url):
     title = clean_title(ei.get('title'))
     start = ei.get('startTime')
@@ -158,10 +167,8 @@ def confirmed_from_event_info(ei, url):
 
     price = _extract_price(ei)
 
-    slug = url.rstrip('/').split('/')[-1]
-
     rec = {
-        'id': slug,
+        'id': _canonical_mixer_id(start),
         'source': SOURCE_ID,
         'title': title,
         'start': start,
@@ -213,7 +220,7 @@ def projection(year, month):
     end_dt   = datetime(d.year, d.month, d.day, eh, em, tzinfo=LONDON)
     ym = f'{year:04d}-{month:02d}'
     return {
-        'id': f'bgo-mixer-{ym}-projected',
+        'id': f'bgo-mixer-{ym}',
         'source': SOURCE_ID,
         'title': MIXER_BASE_TITLE,
         'start': start_dt.isoformat(timespec='seconds'),
@@ -246,18 +253,18 @@ def main():
     if DATA_FILE.exists():
         existing = json.loads(DATA_FILE.read_text())
 
+    # Normalize legacy mixer ids (url-slug confirmed, '-projected' suffix
+    # projections) to the canonical month-keyed scheme. Idempotent — keeps
+    # existing_by_id lookups working so short-codes / custom fields survive
+    # a projection→confirmed swap.
+    for e in existing:
+        if is_mixer_event(e) and e.get('start'):
+            e['id'] = _canonical_mixer_id(e['start'])
+
     # Split into mixer rows (replace) and everything else (preserve).
     non_mixer = [e for e in existing if not is_mixer_event(e)]
     old_mixer = [e for e in existing if is_mixer_event(e)]
     print(f'Loaded {len(existing)} BGO events ({len(non_mixer)} non-mixer kept, {len(old_mixer)} mixer to refresh)', file=sys.stderr)
-
-    # Preserve past confirmed mixers from existing data (so the calendar keeps history
-    # even if a mixer URL stops resolving on Nas).
-    past_existing_mixers = [
-        e for e in old_mixer
-        if e.get('start', '')[:10] < today.isoformat()
-        and e.get('status') != 'projected'
-    ]
 
     # Discover + parse current mixer listings.
     urls = discover_mixer_urls()
@@ -273,15 +280,21 @@ def main():
         scraped.append(ev)
         print(f"  OK   {ev['start'][:10]}  {ev['price']:<5}  {url.split('/events/')[1][:60]}", file=sys.stderr)
 
-    # Merge scraped into past_existing_mixers (by id, scraped wins).
-    by_id = {e['id']: e for e in past_existing_mixers}
+    # Persist every previously-stored mixer (past or future, confirmed or
+    # projected). Nas drops events from listings once they happen — sometimes
+    # earlier — but we don't want them to vanish from the calendar.
+    all_mixers_by_id = {e['id']: e for e in old_mixer}
     for e in scraped:
-        by_id[e['id']] = e
-    confirmed_all = list(by_id.values())
+        all_mixers_by_id[e['id']] = e  # fresh scrape wins on canonical-id collision
 
-    confirmed_months = {year_month(e['start']) for e in confirmed_all}
+    # Confirmed months considered: any month with a confirmed mixer (stored or
+    # fresh). Stops a regenerated projection from downgrading a stored
+    # confirmed event whose URL fell out of Nas's listing.
+    confirmed_months = {year_month(e['start']) for e in all_mixers_by_id.values()
+                        if e.get('status') == 'confirmed'}
 
-    # Project upcoming first-Thursdays without a confirmed mixer.
+    # Project upcoming first-Thursdays without a confirmed mixer. Fresh
+    # projections overlay any stored projection at the same canonical id.
     projected = []
     for (y, m) in upcoming_months((today.year, today.month), PROJECTION_MONTHS + 1):
         ym = f'{y:04d}-{m:02d}'
@@ -291,19 +304,24 @@ def main():
             continue
         projected.append(projection(y, m))
 
+    for e in projected:
+        all_mixers_by_id[e['id']] = e
+
     # Idempotent merge: any custom fields the user has added on these IDs
-    # (e.g. category overrides, future custom labels) survive a re-run.
+    # (e.g. category overrides, short-codes) survive a re-run.
     existing_by_id = {e['id']: e for e in existing}
     new_mixer = [merge_preserving_custom(e, existing_by_id.get(e['id']))
-                 for e in confirmed_all + projected]
+                 for e in all_mixers_by_id.values()]
     merged = {e['id']: e for e in non_mixer + new_mixer}
     out = sorted(merged.values(), key=lambda e: e['start'])
 
     DATA_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
+    confirmed_count = sum(1 for e in new_mixer if e.get('status') == 'confirmed')
+    projected_count = sum(1 for e in new_mixer if e.get('status') == 'projected')
     print('', file=sys.stderr)
     print(f'Wrote {len(out)} event(s) -> {DATA_FILE.relative_to(ROOT)}', file=sys.stderr)
-    print(f'  {len(non_mixer)} non-mixer (untouched), {len(confirmed_all)} confirmed mixer, {len(projected)} projected mixer', file=sys.stderr)
+    print(f'  {len(non_mixer)} non-mixer (untouched), {confirmed_count} confirmed mixer, {projected_count} projected mixer', file=sys.stderr)
     for e in new_mixer:
         when = e['start'][:10]
         tag = 'past' if when < today.isoformat() else e['status']

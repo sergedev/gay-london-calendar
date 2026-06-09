@@ -208,12 +208,13 @@ def main():
 
     # Idempotent merge: preserve custom fields on existing records
     merged = [merge_preserving_custom(r, existing_by_id.get(r['id'])) for r in fresh]
-    # Keep any past events that aren't in fresh (shouldn't happen often but
-    # belt-and-braces)
+    # Persist every previously-stored event. Meetup drops events from the
+    # upcoming listing once they start (or sometimes earlier), but we keep
+    # them around so share links / favourites don't break. Stale rows can
+    # always be removed manually.
     new_ids = {r['id'] for r in merged}
-    past = [e for e in existing
-            if e['id'] not in new_ids and e.get('start', '')[:10] < today.isoformat()]
-    out = sorted(merged + past, key=lambda e: e['start'] or '')
+    kept = [e for e in existing if e['id'] not in new_ids]
+    out = sorted(merged + kept, key=lambda e: e['start'] or '')
 
     DATA_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + '\n')
     print(f'\nWrote {len(out)} event(s) to {DATA_FILE.relative_to(ROOT)}',

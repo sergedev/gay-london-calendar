@@ -1,6 +1,6 @@
 [
   {
-    "id": "monthly-mixer-at-the-cock-tavern",
+    "id": "bgo-mixer-2026-05",
     "source": "big-gay-out",
     "title": "Monthly Mixer at The Cock Tavern",
     "start": "2026-05-07T18:30:00.000Z",
@@ -24,7 +24,7 @@
     "shortCode": "lJ"
   },
   {
-    "id": "monthly-mixer-at-the-cock-tavern--1776872680204",
+    "id": "bgo-mixer-2026-06",
     "source": "big-gay-out",
     "title": "June Mixer at The Cock Tavern",
     "start": "2026-06-04T18:30:00.000Z",
@@ -158,7 +158,7 @@
     "shortCode": "J3"
   },
   {
-    "id": "bgo-mixer-2026-07-projected",
+    "id": "bgo-mixer-2026-07",
     "source": "big-gay-out",
     "title": "Monthly Mixer at The Cock Tavern",
     "start": "2026-07-02T19:30:00+01:00",
@@ -211,7 +211,7 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 50,
-    "attendees": 30,
+    "attendees": 32,
     "shortCode": "TK"
   },
   {
@@ -230,7 +230,7 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 12,
+    "attendees": 14,
     "shortCode": "Om"
   },
   {
@@ -253,7 +253,7 @@
     "shortCode": "zI"
   },
   {
-    "id": "bgo-mixer-2026-08-projected",
+    "id": "bgo-mixer-2026-08",
     "source": "big-gay-out",
     "title": "Monthly Mixer at The Cock Tavern",
     "start": "2026-08-06T19:30:00+01:00",
@@ -272,7 +272,7 @@
     "shortCode": "Gc"
   },
   {
-    "id": "bgo-mixer-2026-09-projected",
+    "id": "bgo-mixer-2026-09",
     "source": "big-gay-out",
     "title": "Monthly Mixer at The Cock Tavern",
     "start": "2026-09-03T19:30:00+01:00",
@@ -309,7 +309,7 @@
     "shortCode": "pI"
   },
   {
-    "id": "bgo-mixer-2026-10-projected",
+    "id": "bgo-mixer-2026-10",
     "source": "big-gay-out",
     "title": "Monthly Mixer at The Cock Tavern",
     "start": "2026-10-01T19:30:00+01:00",

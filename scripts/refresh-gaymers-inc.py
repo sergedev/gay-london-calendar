@@ -137,11 +137,19 @@ def slug_from_url(url):
     return f'gaymers-inc-{s}' if s else None
 
 
+def _canonical_id(start_iso):
+    """Stable month-keyed id for the Gaymers iNC. monthly meet-up series.
+    Projected and confirmed entries in a given month share this id so a
+    confirmed scrape overwrites the projection in place — preserving
+    short-codes and share links."""
+    return f'gaymers-inc-{(start_iso or "")[:7]}'
+
+
 def confirmed_record(item):
     title = clean_title(item.get('name'))
     url = item.get('url') or ''
     return {
-        'id': slug_from_url(url) or f'gaymers-inc-{year_month(item.get("startDate",""))}',
+        'id': _canonical_id(item.get('startDate')),
         'source': SOURCE_ID,
         'title': title,
         'start': item.get('startDate'),
@@ -168,7 +176,7 @@ def projection(year, month):
     end_dt   = datetime(d.year, d.month, d.day, eh, em, tzinfo=LONDON)
     ym = f'{year:04d}-{month:02d}'
     return {
-        'id': f'gaymers-inc-{ym}-projected',
+        'id': f'gaymers-inc-{ym}',
         'source': SOURCE_ID,
         'title': 'Gaymers iNC. Monthly Meet-Up',
         'start': start_dt.isoformat(timespec='seconds'),
@@ -208,6 +216,15 @@ def main():
     existing = []
     if DATA_FILE.exists():
         existing = json.loads(DATA_FILE.read_text())
+
+    # Normalize legacy ids (slug-based confirmed, '-projected' suffix
+    # projections) to the canonical month-keyed scheme. Idempotent — keeps
+    # existing_by_id lookups working so short-codes / custom fields survive
+    # a projection→confirmed swap.
+    for e in existing:
+        if e.get('source') == SOURCE_ID and e.get('start'):
+            e['id'] = _canonical_id(e['start'])
+
     existing_by_id = {e['id']: e for e in existing}
 
     print(f'GET {EVENTS_URL}', file=sys.stderr)
@@ -229,7 +246,18 @@ def main():
         print(f"  OK   {rec['start'][:10]}  [{','.join(rec['categories'])}]  {name[:55]}",
               file=sys.stderr)
 
-    confirmed_months = {year_month(e['start']) for e in confirmed}
+    # Persist every previously-stored event. The Gaymers iNC. site drops
+    # past events from its listing; we don't want them to vanish from the
+    # calendar (or stored future events that fall out of the listing).
+    all_by_id = {e['id']: e for e in existing}
+    for e in confirmed:
+        all_by_id[e['id']] = e  # fresh scrape wins on canonical-id collision
+
+    # Confirmed months: any month with a confirmed event (stored or fresh).
+    # Stops a regenerated projection from downgrading a stored confirmed
+    # event whose source listing has dropped.
+    confirmed_months = {year_month(e['start']) for e in all_by_id.values()
+                        if e.get('status') == 'confirmed'}
 
     projected = []
     for (y, m) in upcoming_months((today.year, today.month), PROJECTION_MONTHS + 1):
@@ -240,13 +268,12 @@ def main():
             continue
         projected.append(projection(y, m))
 
-    fresh = confirmed + projected
-    merged = [merge_preserving_custom(r, existing_by_id.get(r['id'])) for r in fresh]
-    new_ids = {r['id'] for r in merged}
-    past = [e for e in existing
-            if e['id'] not in new_ids and e.get('start', '')[:10] < today.isoformat()
-            and e.get('status') != 'projected']
-    out = sorted(merged + past, key=lambda e: e.get('start') or '')
+    for e in projected:
+        all_by_id[e['id']] = e
+
+    merged_list = [merge_preserving_custom(r, existing_by_id.get(r['id']))
+                   for r in all_by_id.values()]
+    out = sorted(merged_list, key=lambda e: e.get('start') or '')
 
     DATA_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + '\n')
     print(f'\nWrote {len(out)} event(s) to {DATA_FILE.relative_to(ROOT)}', file=sys.stderr)

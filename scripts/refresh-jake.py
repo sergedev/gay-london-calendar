@@ -194,15 +194,16 @@ def main():
               file=sys.stderr)
 
     merged = [merge_preserving_custom(r, existing_by_id.get(r['id'])) for r in confirmed]
+    # Persist every previously-stored event. JAKE's index drops events
+    # post-date (and sometimes earlier); we keep them so share links /
+    # favourites don't break. Stale rows removed manually.
     new_ids = {r['id'] for r in merged}
-    past = [e for e in existing
-            if e['id'] not in new_ids and e.get('start', '')[:10] < today.isoformat()
-            and e.get('status') != 'projected']
-    out = sorted(merged + past, key=lambda e: e.get('start') or '')
+    kept = [e for e in existing if e['id'] not in new_ids]
+    out = sorted(merged + kept, key=lambda e: e.get('start') or '')
 
     DATA_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + '\n')
     print(f'\nWrote {len(out)} event(s) to {DATA_FILE.relative_to(ROOT)}', file=sys.stderr)
-    print(f'  {len(confirmed)} confirmed, {len(past)} past kept', file=sys.stderr)
+    print(f'  {len(confirmed)} confirmed, {len(kept)} previously-stored kept', file=sys.stderr)
 
 
 if __name__ == '__main__':

@@ -132,11 +132,8 @@ def confirmed_from_jsonld(data, url):
         if name and name.lower() not in ('tbd', 'tba', 'tbc'):
             location = name
 
-    ticket_id_match = re.search(r'-tickets-(\d+)$', url)
-    ticket_id = ticket_id_match.group(1) if ticket_id_match else year_month(start).replace('-', '')
-
     return {
-        'id': f'village-drinks-eb-{ticket_id}',
+        'id': _canonical_id(start),
         'source': SOURCE_ID,
         'title': title or 'Village Drinks',
         'start': start,
@@ -155,12 +152,19 @@ def confirmed_from_jsonld(data, url):
     }
 
 
+def _canonical_id(start_iso):
+    """Stable month-keyed id for the Village Drinks monthly series. Projected
+    and confirmed entries in a given month share this id so a confirmed scrape
+    overwrites the projection in place — preserving short-codes and share links."""
+    return f'village-drinks-{(start_iso or "")[:7]}'
+
+
 def projection(year, month):
     d = last_thursday_of_month(year, month)
     iso = d.isoformat()
     ym = f'{year:04d}-{month:02d}'
     return {
-        'id': f'village-drinks-{ym}-projected',
+        'id': f'village-drinks-{ym}',
         'source': SOURCE_ID,
         'title': 'Village Drinks',
         'start': f'{iso}T{PROJECTED_START_TIME}',
@@ -192,8 +196,14 @@ def main():
     existing = []
     if DATA_FILE.exists():
         existing = json.loads(DATA_FILE.read_text())
-    past_existing = [e for e in existing if e.get('start', '')[:10] < today.isoformat()
-                     and e.get('status') != 'projected']
+
+    # Normalize legacy ids (eventbrite-based confirmed, '-projected' suffix
+    # projections) to the canonical month-keyed scheme. Idempotent — keeps
+    # existing_by_id lookups working so short-codes / custom fields survive
+    # a projection→confirmed swap.
+    for e in existing:
+        if e.get('source') == SOURCE_ID and e.get('start'):
+            e['id'] = _canonical_id(e['start'])
 
     print(f'GET {ORGANIZER_URL}', file=sys.stderr)
     urls = scrape_event_urls()
@@ -210,7 +220,18 @@ def main():
         slug = url.split('/e/', 1)[1][:60]
         print(f"  OK   {ev['start'][:10]}  {ev['price']!s:<8}  {slug}", file=sys.stderr)
 
-    confirmed_months = {year_month(e['start']) for e in confirmed}
+    # Persist every previously-stored event. Eventbrite drops events from
+    # listings once they happen — sometimes earlier — but we don't want
+    # them to vanish from the calendar.
+    all_by_id = {e['id']: e for e in existing}
+    for e in confirmed:
+        all_by_id[e['id']] = e  # fresh scrape wins on canonical-id collision
+
+    # Confirmed months: any month with a confirmed event (stored or fresh).
+    # Stops a regenerated projection from downgrading a stored confirmed
+    # event whose Eventbrite listing has dropped.
+    confirmed_months = {year_month(e['start']) for e in all_by_id.values()
+                        if e.get('status') == 'confirmed'}
 
     projected = []
     for (y, m) in upcoming_months((today.year, today.month), PROJECTION_MONTHS + 1):
@@ -221,21 +242,23 @@ def main():
             continue
         projected.append(projection(y, m))
 
+    for e in projected:
+        all_by_id[e['id']] = e
+
     # Idempotent merge: preserve any custom fields the user has added
-    # (e.g. category overrides, area tags, notes) across re-runs.
+    # (e.g. category overrides, area tags, notes, short-codes) across re-runs.
     existing_by_id = {e['id']: e for e in existing}
-    confirmed_merged = [merge_preserving_custom(e, existing_by_id.get(e['id']))
-                        for e in confirmed]
-    projected_merged = [merge_preserving_custom(e, existing_by_id.get(e['id']))
-                        for e in projected]
-    merged = {e['id']: e for e in past_existing + confirmed_merged + projected_merged}
-    out = sorted(merged.values(), key=lambda e: e['start'])
+    merged_list = [merge_preserving_custom(e, existing_by_id.get(e['id']))
+                   for e in all_by_id.values()]
+    out = sorted(merged_list, key=lambda e: e['start'] or '')
 
     DATA_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
     print('', file=sys.stderr)
     print(f"Wrote {len(out)} event(s) -> {DATA_FILE.relative_to(ROOT)}", file=sys.stderr)
-    print(f"  {len(past_existing)} past, {len(confirmed)} confirmed, {len(projected)} projected", file=sys.stderr)
+    confirmed_count = sum(1 for e in out if e.get('status') == 'confirmed')
+    projected_count = sum(1 for e in out if e.get('status') == 'projected')
+    print(f"  {confirmed_count} confirmed, {projected_count} projected (incl. previously-stored)", file=sys.stderr)
     for e in out:
         when = e['start'][:10]
         if when < today.isoformat():
