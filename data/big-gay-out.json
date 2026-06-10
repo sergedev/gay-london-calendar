@@ -160,21 +160,26 @@
   {
     "id": "bgo-mixer-2026-07",
     "source": "big-gay-out",
-    "title": "Monthly Mixer at The Cock Tavern",
-    "start": "2026-07-02T19:30:00+01:00",
-    "end": "2026-07-02T23:30:00+01:00",
+    "title": "Monthly Mixer PRIDE EDITION",
+    "start": "2026-07-02T18:30:00.000Z",
+    "end": "2026-07-02T22:30:00.000Z",
     "location": "The Cock Tavern, Kennington",
-    "price": null,
-    "url": "https://biggayout.org/",
-    "status": "projected",
+    "price": "Free",
+    "url": "https://nas.com/big-gay-out/events/monthly-mixer-pride-edition",
+    "status": "confirmed",
     "recurrence": "first-thursday-monthly",
-    "links": {},
-    "description": "Projected based on the usual first-Thursday-of-month cadence. Tickets typically released a few weeks ahead.",
+    "links": {
+      "tickets": "https://nas.com/big-gay-out/events/monthly-mixer-pride-edition"
+    },
+    "description": "",
     "categories": [
       "social"
     ],
     "categoriesOverride": null,
-    "shortCode": "XK"
+    "shortCode": "XK",
+    "attendees": 17,
+    "soldOut": false,
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1781000841133_507f1242-d70c-48a9-91e6-46282c75f08a_GV"
   },
   {
     "id": "grindr-the-opera-an-unauthorised-parody",
@@ -211,7 +216,7 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 50,
-    "attendees": 32,
+    "attendees": 33,
     "shortCode": "TK"
   },
   {

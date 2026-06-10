@@ -147,8 +147,8 @@
     "categoriesOverride": null,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780065381325_0764600f-610a-4730-8233-13d14bdcc93d_GV",
     "soldOut": false,
-    "attendeeLimit": 37,
-    "attendees": 12,
+    "attendeeLimit": 30,
+    "attendees": 13,
     "shortCode": "bF"
   },
   {
@@ -183,10 +183,10 @@
       "social"
     ],
     "categoriesOverride": null,
-    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1779024625309_e597bfa9-7f43-4f7a-9708-fc111f6dbbc9_GV",
+    "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1781099595453_2fda4ee3-bf23-4323-b41f-f9f326663c15_GV",
     "soldOut": false,
-    "attendeeLimit": 120,
-    "attendees": 119,
+    "attendeeLimit": 150,
+    "attendees": 121,
     "shortCode": "49"
   },
   {
@@ -243,7 +243,7 @@
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780061540352_822c3239-79bd-45cc-bdbe-073088322eab_GV",
     "soldOut": false,
     "attendeeLimit": 20,
-    "attendees": 12,
+    "attendees": 13,
     "shortCode": "VJ"
   },
   {
@@ -262,7 +262,7 @@
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1780065851886_5c707d7b-7a5f-4c77-91b6-08dda2487a35_GV",
     "soldOut": false,
     "attendeeLimit": 40,
-    "attendees": 34,
+    "attendees": 35,
     "shortCode": "Ql"
   },
   {

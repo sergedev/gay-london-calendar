@@ -67,13 +67,16 @@
   "elephant-park-pride": {
     "name": "Elephant Park Pride",
     "shortName": "Elephant Park Pride",
-    "url": "https://www.elephantpark.co.uk/dine-drink-shop/events-and-fun/welcome-to-the-gaybourhood/",
-    "website": "https://www.elephantpark.co.uk/dine-drink-shop/events-and-fun/welcome-to-the-gaybourhood/",
+    "url": "https://www.elephantpark.co.uk/",
+    "website": "https://www.elephantpark.co.uk/",
     "instagram": "https://www.instagram.com/elephantparklgbtq",
     "color": "#e11d48",
     "logo": "./assets/logos/elephant-park-pride.jpg",
     "letter": "P",
-    "description": "Yearly LGBTQ+ Pride celebration at Elephant Park (Elephant & Castle). Last year's edition was 26 Jul 2025; this year's projected for late July 2026."
+    "description": "Yearly LGBTQ+ Pride celebration at Elephant Park (Elephant & Castle). 2026 edition confirmed for 25 Jul 2026.",
+    "instagramFeaturedByTitle": {
+      "Elephant Park Pride 2026": "DM8EJcpKKOz"
+    }
   },
   "the-social-gays": {
     "name": "The Social Gays",

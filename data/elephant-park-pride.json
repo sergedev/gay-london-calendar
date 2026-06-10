@@ -1,21 +1,21 @@
 [
   {
-    "id": "elephant-park-pride-2026-projected",
+    "id": "elephant-park-pride-2026",
     "source": "elephant-park-pride",
     "title": "Elephant Park Pride 2026",
     "start": "2026-07-25T14:00:00+01:00",
     "end": "2026-07-25T22:00:00+01:00",
     "location": "Elephant Park, Elephant & Castle",
-    "price": null,
-    "url": "https://www.elephantpark.co.uk/dine-drink-shop/events-and-fun/welcome-to-the-gaybourhood/",
+    "price": "Free",
+    "url": "https://www.outsavvy.com/event/36841/elephant-pride-2026",
     "image": "./assets/event-images/elephant-park-pride-2026.png",
-    "status": "projected",
+    "status": "confirmed",
     "recurrence": "yearly-late-july",
     "links": {
-      "tickets": "https://www.outsavvy.com/event/27870/elephant-park-pride",
+      "tickets": "https://www.outsavvy.com/event/36841/elephant-pride-2026",
       "gofundme": "https://www.gofundme.com/f/elephant-park-pride-2026"
     },
-    "description": "Projected date based on last year's edition (26 Jul 2025). Yet to be confirmed for 2026 — check the Elephant Park website or Instagram closer to the date.",
+    "description": "Free outdoor LGBTQ+ festival in Elephant Park, 2–10pm. DJs all day, headlined by Lucy Rose as Absolute Britney. Grab a free ticket on OutSavvy so the organisers know numbers.",
     "soldOut": false,
     "categories": [
       "social",

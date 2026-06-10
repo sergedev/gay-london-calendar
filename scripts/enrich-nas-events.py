@@ -11,6 +11,12 @@ only the authoritative fields managed by this script are overwritten.
 Supersedes the older `enrich-nas-images.py` and `fix-nas-prices.py`
 scripts (which only handled subsets of these fields).
 
+Disclaimer (Nas tiered pricing — TRYBZ uses this for some mixers, e.g. their birthday): on tier-released
+events the `attendeeLimit` is the *current tier's* threshold, not the
+event's total cap. When the tier fills, the organiser opens a new tier and
+both the price and attendeeLimit step up — so attendance == limit only
+means sold out *if no further tier is released*.
+
 Run: python3 scripts/enrich-nas-events.py
 """
 
