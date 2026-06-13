@@ -1,0 +1,562 @@
+[
+  {
+    "id": "feel-it-2026-06-19",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-06-19T22:30:00+01:00",
+    "end": "2026-06-20T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "Gk"
+  },
+  {
+    "id": "feel-it-2026-06-26",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-06-26T22:30:00+01:00",
+    "end": "2026-06-27T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "ys"
+  },
+  {
+    "id": "feel-it-2026-07-03",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-07-03T22:30:00+01:00",
+    "end": "2026-07-04T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "3Y"
+  },
+  {
+    "id": "feel-it-2026-07-10",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-07-10T22:30:00+01:00",
+    "end": "2026-07-11T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "G3"
+  },
+  {
+    "id": "feel-it-2026-07-17",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-07-17T22:30:00+01:00",
+    "end": "2026-07-18T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "7j"
+  },
+  {
+    "id": "feel-it-2026-07-24",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-07-24T22:30:00+01:00",
+    "end": "2026-07-25T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "sQ"
+  },
+  {
+    "id": "feel-it-2026-07-31",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-07-31T22:30:00+01:00",
+    "end": "2026-08-01T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "U1"
+  },
+  {
+    "id": "feel-it-2026-08-07",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-08-07T22:30:00+01:00",
+    "end": "2026-08-08T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "ad"
+  },
+  {
+    "id": "feel-it-2026-08-14",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-08-14T22:30:00+01:00",
+    "end": "2026-08-15T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "t5"
+  },
+  {
+    "id": "feel-it-2026-08-21",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-08-21T22:30:00+01:00",
+    "end": "2026-08-22T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "SY"
+  },
+  {
+    "id": "feel-it-2026-08-28",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-08-28T22:30:00+01:00",
+    "end": "2026-08-29T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "PO"
+  },
+  {
+    "id": "feel-it-2026-09-04",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-09-04T22:30:00+01:00",
+    "end": "2026-09-05T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "Fg"
+  },
+  {
+    "id": "feel-it-2026-09-11",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-09-11T22:30:00+01:00",
+    "end": "2026-09-12T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "u6"
+  },
+  {
+    "id": "feel-it-2026-09-18",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-09-18T22:30:00+01:00",
+    "end": "2026-09-19T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "YF"
+  },
+  {
+    "id": "feel-it-2026-09-25",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-09-25T22:30:00+01:00",
+    "end": "2026-09-26T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "XB"
+  },
+  {
+    "id": "feel-it-2026-10-02",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-10-02T22:30:00+01:00",
+    "end": "2026-10-03T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "ld"
+  },
+  {
+    "id": "feel-it-2026-10-09",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-10-09T22:30:00+01:00",
+    "end": "2026-10-10T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "C9"
+  },
+  {
+    "id": "feel-it-2026-10-16",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-10-16T22:30:00+01:00",
+    "end": "2026-10-17T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "QR"
+  },
+  {
+    "id": "feel-it-2026-10-23",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-10-23T22:30:00+01:00",
+    "end": "2026-10-24T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "RR"
+  },
+  {
+    "id": "feel-it-2026-10-30",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-10-30T22:30:00+01:00",
+    "end": "2026-10-31T05:00:00+01:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "Jw"
+  },
+  {
+    "id": "feel-it-2026-11-06",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-11-06T22:30:00+00:00",
+    "end": "2026-11-07T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "aB"
+  },
+  {
+    "id": "feel-it-2026-11-13",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-11-13T22:30:00+00:00",
+    "end": "2026-11-14T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "Ku"
+  },
+  {
+    "id": "feel-it-2026-11-20",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-11-20T22:30:00+00:00",
+    "end": "2026-11-21T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "4I"
+  },
+  {
+    "id": "feel-it-2026-11-27",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-11-27T22:30:00+00:00",
+    "end": "2026-11-28T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "8y"
+  },
+  {
+    "id": "feel-it-2026-12-04",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-12-04T22:30:00+00:00",
+    "end": "2026-12-05T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "qR"
+  },
+  {
+    "id": "feel-it-2026-12-11",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-12-11T22:30:00+00:00",
+    "end": "2026-12-12T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "ck"
+  },
+  {
+    "id": "feel-it-2026-12-18",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-12-18T22:30:00+00:00",
+    "end": "2026-12-19T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "Eq"
+  },
+  {
+    "id": "feel-it-2026-12-25",
+    "source": "feel-it",
+    "title": "Feel It",
+    "start": "2026-12-25T22:30:00+00:00",
+    "end": "2026-12-26T05:00:00+00:00",
+    "location": "XOYO",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "Weekly Friday party at XOYO. (Reduced schedule sometimes in Jan/Feb.)",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "qh"
+  }
+]

@@ -252,5 +252,115 @@
     "color": "#9333ea",
     "letter": "P",
     "description": "Major Pride celebrations across the UK and Europe — a heads-up for anyone planning to travel."
+  },
+  "roast": {
+    "name": "Roast",
+    "shortName": "Roast",
+    "url": "https://www.instagram.com/roast.london.roast",
+    "instagram": "https://www.instagram.com/roast.london.roast",
+    "color": "#ef4444",
+    "letter": "R",
+    "description": "Queer club night at Electrowerkz.",
+    "partyOnly": true
+  },
+  "bash": {
+    "name": "Bash",
+    "shortName": "Bash",
+    "url": "https://www.instagram.com/bashclubldn/",
+    "instagram": "https://www.instagram.com/bashclubldn/",
+    "color": "#f97316",
+    "letter": "B",
+    "description": "Queer club night in London.",
+    "partyOnly": true
+  },
+  "adonis": {
+    "name": "Adonis",
+    "shortName": "Adonis",
+    "url": "https://www.instagram.com/adonis.adonis.adonis",
+    "instagram": "https://www.instagram.com/adonis.adonis.adonis",
+    "color": "#8b5cf6",
+    "letter": "A",
+    "description": "Queer party — daytime and afterparties across London venues.",
+    "partyOnly": true
+  },
+  "club-are": {
+    "name": "Club Are",
+    "shortName": "Club Are",
+    "url": "https://www.instagram.com/club_are/",
+    "instagram": "https://www.instagram.com/club_are/",
+    "color": "#06b6d4",
+    "letter": "C",
+    "description": "Queer day party in London.",
+    "partyOnly": true
+  },
+  "hcl": {
+    "name": "Hard Cock Life",
+    "shortName": "HCL",
+    "url": "https://www.instagram.com/hardcklife/",
+    "instagram": "https://www.instagram.com/hardcklife/",
+    "color": "#dc2626",
+    "letter": "H",
+    "description": "Queer party at The Cause.",
+    "partyOnly": true
+  },
+  "sextou": {
+    "name": "Sextou",
+    "shortName": "Sextou",
+    "url": "https://www.instagram.com/sextou_london/",
+    "instagram": "https://www.instagram.com/sextou_london/",
+    "color": "#db2777",
+    "letter": "S",
+    "description": "Brazilian-flavoured queer party in London.",
+    "partyOnly": true
+  },
+  "howl": {
+    "name": "Howl",
+    "shortName": "Howl",
+    "url": "https://www.instagram.com/howlworldwide",
+    "instagram": "https://www.instagram.com/howlworldwide",
+    "color": "#7c3aed",
+    "letter": "H",
+    "description": "Queer party in Hackney Wick.",
+    "partyOnly": true
+  },
+  "false-idol": {
+    "name": "False Idol",
+    "shortName": "False Idol",
+    "url": "https://www.instagram.com/falseidolsworld",
+    "instagram": "https://www.instagram.com/falseidolsworld",
+    "color": "#6366f1",
+    "letter": "F",
+    "description": "Large-scale queer warehouse party at Drumsheds.",
+    "partyOnly": true
+  },
+  "guapo": {
+    "name": "Guapo",
+    "shortName": "Guapo",
+    "url": "https://www.instagram.com/guapo.fiesta",
+    "instagram": "https://www.instagram.com/guapo.fiesta",
+    "color": "#ea580c",
+    "letter": "G",
+    "description": "Queer fiesta in London.",
+    "partyOnly": true
+  },
+  "club-red-hot": {
+    "name": "Club Red Hot",
+    "shortName": "Red Hot",
+    "url": "https://www.instagram.com/redhot100",
+    "instagram": "https://www.instagram.com/redhot100",
+    "color": "#e11d48",
+    "letter": "R",
+    "description": "Queer club night in London.",
+    "partyOnly": true
+  },
+  "feel-it": {
+    "name": "Feel It",
+    "shortName": "Feel It",
+    "url": "https://www.instagram.com/feelitparty/",
+    "instagram": "https://www.instagram.com/feelitparty/",
+    "color": "#0ea5e9",
+    "letter": "F",
+    "description": "Weekly Friday queer party at XOYO, 10:30pm till 5am.",
+    "partyOnly": true
   }
 }

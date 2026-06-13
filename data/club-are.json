@@ -1,0 +1,43 @@
+[
+  {
+    "id": "club-are-2026-06-06",
+    "source": "club-are",
+    "title": "Club Are",
+    "start": "2026-06-06T12:00:00+01:00",
+    "end": "2026-06-06T22:00:00+01:00",
+    "location": "Hackney Bridge",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "05"
+  },
+  {
+    "id": "club-are-2026-07-25",
+    "source": "club-are",
+    "title": "Club Are",
+    "start": "2026-07-25T22:00:00+01:00",
+    "end": null,
+    "location": null,
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "confirmed",
+    "links": {},
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "allDay": true,
+    "shortCode": "sC"
+  }
+]

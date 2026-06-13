@@ -11,7 +11,12 @@ const CATEGORIES = [
   { id: 'food',     label: 'Food' },
   { id: 'pride',    label: 'Pride' },
   { id: 'festival', label: 'Festival' },
+  { id: 'party',    label: 'Party' },
 ];
+
+// Party mode shows only these categories — raves / nightclubs / street parties
+// (tagged `party`) plus festivals. Social mode (default) shows everything.
+const PARTY_CATS = new Set(['party', 'festival']);
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -42,6 +47,7 @@ function bankHoliday(d) { return BANK_HOLIDAYS[dateKey(d)] || null; }
 // ---------- State ----------
 const STATE = {
   view: 'auto',
+  mode: 'social',  // 'social' (all events) | 'party' (party + festival only)
   month: startOfMonth(new Date()),
   filters: { sources: new Set(), categories: new Set(), favoritesOnly: false, sharedOnly: false },
   filtersOpen: false,  // mobile-only — desktop ignores this and always shows chips
@@ -60,7 +66,7 @@ const STATE = {
 // Share URL category encoding: each category → single letter
 const CAT_LETTER = {
   fitness: 'f', outdoors: 'o', social: 's', arts: 'a',
-  games: 'g', food: 'd', pride: 'p', festival: 'e',
+  games: 'g', food: 'd', pride: 'p', festival: 'e', party: 'y',
 };
 const LETTER_CAT = Object.fromEntries(Object.entries(CAT_LETTER).map(([k, v]) => [v, k]));
 
@@ -133,6 +139,13 @@ function primaryCategory(ev) {
   const cats = effectiveCategories(ev);
   return cats[0] || 'default';
 }
+// Display order within a day: Pride events float to the top, then by start time.
+function compareEvents(a, b) {
+  const pa = effectiveCategories(a).includes('pride') ? 0 : 1;
+  const pb = effectiveCategories(b).includes('pride') ? 0 : 1;
+  if (pa !== pb) return pa - pb;
+  return new Date(a.start) - new Date(b.start);
+}
 function passesFilters(ev) {
   const f = STATE.filters;
   // Favorites + Shared are independent toggles with OR semantics: if any
@@ -142,6 +155,19 @@ function passesFilters(ev) {
     const inFav = f.favoritesOnly && code && STATE.favorites.has(code);
     const inShared = f.sharedOnly && code && STATE.sharedFavorites.has(code);
     if (!inFav && !inShared) return false;
+  } else {
+    // Mode is an organiser/category lens (skipped for favourites/shared, which
+    // are mode-agnostic so a shared link can mix anything).
+    // - party-only sources (the club-night promoters) appear ONLY in party mode
+    // - party mode also shows party/festival-tagged events + `showInParty` opt-ins
+    const partyOnlySrc = STATE.sources[ev.source] && STATE.sources[ev.source].partyOnly;
+    if (STATE.mode === 'party') {
+      const inParty = partyOnlySrc || ev.showInParty
+        || effectiveCategories(ev).some(c => PARTY_CATS.has(c));
+      if (!inParty) return false;
+    } else if (partyOnlySrc) {
+      return false;  // social mode hides the dedicated party promoters
+    }
   }
   if (f.sources.size > 0 && !f.sources.has(ev.source)) return false;
   if (f.categories.size > 0) {
@@ -152,11 +178,11 @@ function passesFilters(ev) {
 }
 function eventsForDay(d) {
   return STATE.events.filter(ev => isSameDay(new Date(ev.start), d) && passesFilters(ev))
-    .sort((a, b) => new Date(a.start) - new Date(b.start));
+    .sort(compareEvents);
 }
 function eventsForMonth(monthStart) {
   return STATE.events.filter(ev => isSameMonth(new Date(ev.start), monthStart) && passesFilters(ev))
-    .sort((a, b) => new Date(a.start) - new Date(b.start));
+    .sort(compareEvents);
 }
 
 // List view (multi-month): events from [start, start + monthCount).
@@ -166,7 +192,7 @@ function eventsForMonthRange(startMonth, monthCount) {
     if (!passesFilters(ev)) return false;
     const d = new Date(ev.start);
     return d >= startMonth && d < endMonth;
-  }).sort((a, b) => new Date(a.start) - new Date(b.start));
+  }).sort(compareEvents);
 }
 
 // Is there at least one event past the currently-loaded range?
@@ -244,6 +270,7 @@ function applyUrlState() {
   if (p.get('cat')) STATE.filters.categories = new Set(p.get('cat').split(',').filter(Boolean));
   if (p.get('src')) STATE.filters.sources = new Set(p.get('src').split(',').filter(Boolean));
   if (p.get('view')) STATE.view = p.get('view');
+  if (p.get('mode') === 'party') STATE.mode = 'party';
   if (p.get('month')) {
     const [y, m] = p.get('month').split('-').map(Number);
     if (y && m) STATE.month = new Date(y, m-1, 1);
@@ -254,6 +281,7 @@ function pushUrlState() {
   if (STATE.filters.categories.size) p.set('cat', [...STATE.filters.categories].join(','));
   if (STATE.filters.sources.size) p.set('src', [...STATE.filters.sources].join(','));
   if (STATE.view !== 'auto') p.set('view', STATE.view);
+  if (STATE.mode !== 'social') p.set('mode', STATE.mode);
   p.set('month', `${STATE.month.getFullYear()}-${String(STATE.month.getMonth()+1).padStart(2,'0')}`);
   history.replaceState(null, '', `?${p}`);
 }
@@ -287,7 +315,7 @@ function render() {
   app.innerHTML = `
     ${renderHeader(effView, isDesktop)}
     ${renderFilterBar()}
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24">
+    <main class="max-w-[1400px] mx-auto px-4 sm:px-6 pt-4 pb-24">
       ${renderShareBanner()}
       ${effView === 'month' ? renderMonthsView()
         : effView === 'year' ? renderYearGrid()
@@ -663,6 +691,16 @@ function renderHeader(effView, isDesktop) {
     <button data-action="today" class="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-300 hover:bg-slate-50 text-slate-700 whitespace-nowrap">
       Today
     </button>`;
+  // Social ⇄ Party mode switch. Party restricts the calendar to party/festival
+  // events.
+  const party = STATE.mode === 'party';
+  const modeActive = 'bg-white shadow-sm text-slate-900';
+  const modeInactive = 'text-slate-500 hover:text-slate-900';
+  const modeToggle = `
+    <div class="flex rounded-full p-0.5 bg-slate-100 text-xs font-semibold whitespace-nowrap">
+      <button data-action="mode-social" class="px-3 py-1 rounded-full transition ${!party ? modeActive : modeInactive}">Social</button>
+      <button data-action="mode-party" class="px-3 py-1 rounded-full transition ${party ? modeActive : modeInactive}">Party</button>
+    </div>`;
   const prevBtn = `
     <button data-action="prev-period" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600" title="${prevLabel}" aria-label="${prevLabel}">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -694,13 +732,14 @@ function renderHeader(effView, isDesktop) {
 
   return `
     <header id="app-header" class="sticky top-0 z-40 bg-white/90 day-header border-b border-slate-200">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
         <!-- Row 1: title + (desktop nav inline) + view toggle -->
         <div class="flex items-center gap-2 sm:gap-3">
           <div class="flex-1 min-w-0">
             <h1 class="text-base sm:text-xl font-semibold tracking-tight truncate">Gay London Calendar</h1>
             <p class="hidden sm:block text-xs text-slate-500 -mt-0.5">Events from your favourite communities</p>
           </div>
+          ${modeToggle}
           <!-- Desktop only: full nav inline with title -->
           <div class="hidden sm:flex items-center gap-2">
             <span data-today-wrapper class="${showTodayBtn ? '' : 'hidden'}">${todayBtn}</span>
@@ -726,7 +765,18 @@ function renderHeader(effView, isDesktop) {
 
 function renderFilterBar() {
   const f = STATE.filters;
-  const sourceIds = Object.keys(STATE.sources);
+  // Source chips track the active mode: party-only promoters are hidden in
+  // social mode, and party mode shows only sources that have party-eligible
+  // events (party-only orgs, party/festival, or showInParty opt-ins).
+  const partyMode = STATE.mode === 'party';
+  const partyEligible = (id) => {
+    const src = STATE.sources[id];
+    if (src && src.partyOnly) return true;
+    return STATE.events.some(e => e.source === id
+      && (e.showInParty || effectiveCategories(e).some(c => PARTY_CATS.has(c))));
+  };
+  const sourceIds = Object.keys(STATE.sources).filter(id =>
+    partyMode ? partyEligible(id) : !(STATE.sources[id] && STATE.sources[id].partyOnly));
   const anySource = sourceIds.length > 1;
   const sharedCount = STATE.sharedFavorites.size;
   const hasShared = sharedCount > 0;
@@ -756,10 +806,16 @@ function renderFilterBar() {
     </button>
   ` : '';
 
+  // Party mode trims the category chips to the relevant ones (Pride, Festival,
+  // Party); the everyday categories (Fitness/Outdoors/Social/Arts/Games/Food)
+  // only show in social mode.
+  const visibleCats = partyMode
+    ? CATEGORIES.filter(c => ['pride', 'festival', 'party'].includes(c.id))
+    : CATEGORIES;
   const chips = `
     ${favChip}
     ${sharedChip}
-    ${CATEGORIES.map(c => {
+    ${visibleCats.map(c => {
       const active = f.categories.has(c.id);
       return `
         <button data-action="toggle-cat" data-cat="${c.id}"
@@ -798,7 +854,7 @@ function renderFilterBar() {
 
   return `
     <div id="filter-bar" class="sticky z-30 bg-slate-50/90 day-header border-b border-slate-100" style="top: var(--header-h)">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5">
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5">
         <!-- Mobile: toggle button row -->
         <div class="sm:hidden flex items-center justify-between gap-2">
           <button data-action="toggle-filters" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border border-slate-200 bg-white hover:bg-slate-50">
@@ -834,7 +890,7 @@ function renderList() {
   const sharedMode = STATE.filters.sharedOnly && STATE.sharedFavorites.size > 0;
   const multiMonth = sharedMode || STATE.monthsLoaded > 1;
   const baseEvents = sharedMode
-    ? STATE.events.filter(passesFilters).sort((a, b) => new Date(a.start) - new Date(b.start))
+    ? STATE.events.filter(passesFilters).sort(compareEvents)
     : eventsForMonthRange(STATE.month, STATE.monthsLoaded);
   const visibleEvents = STATE.showPastEvents
     ? baseEvents
@@ -1288,7 +1344,7 @@ function renderCalCell(d, today, startMonth, endMonth, i) {
   const isFirstOfMonth = d.getDate() === 1;
   const bankHol = bankHoliday(d);
   const events = eventsForDay(d);
-  const visible = events.slice(0, 6);
+  const visible = events.slice(0, 9);
   const overflow = events.length - visible.length;
   const isLastCol = (i % 7) === 6;
 
@@ -1692,6 +1748,15 @@ function handleAction(e) {
     case 'view-list':  STATE.view = 'list';  render(); break;
     case 'view-month': STATE.view = 'month'; render(); break;
     case 'view-year':  STATE.view = 'year';  render(); break;
+    case 'mode-social':
+    case 'mode-party': {
+      STATE.mode = action === 'mode-party' ? 'party' : 'social';
+      // Reset category + source filters on switch (they differ per mode), but
+      // keep favourites/shared — those are mode-agnostic selections.
+      STATE.filters.categories = new Set();
+      STATE.filters.sources = new Set();
+      render(); break;
+    }
     case 'toggle-filters':
       STATE.filtersOpen = !STATE.filtersOpen;
       render(); break;

@@ -21,7 +21,8 @@
     "shortCode": "fU",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-sitges-2026",
@@ -45,7 +46,8 @@
     "shortCode": "AO",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-london-2026",
@@ -69,7 +71,8 @@
     "shortCode": "Ux",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-madrid-2026",
@@ -93,7 +96,8 @@
     "shortCode": "Bm",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-barcelona-2026",
@@ -117,7 +121,8 @@
     "shortCode": "h4",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-berlin-2026",
@@ -141,7 +146,8 @@
     "shortCode": "Jc",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-brighton-2026",
@@ -165,7 +171,8 @@
     "shortCode": "uN",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   },
   {
     "id": "world-pride-amsterdam-2026",
@@ -189,6 +196,7 @@
     "shortCode": "sg",
     "allDay": true,
     "forceLocation": true,
-    "minimal": true
+    "minimal": true,
+    "showInParty": true
   }
 ]

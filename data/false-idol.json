@@ -1,0 +1,23 @@
+[
+  {
+    "id": "false-idol-2026-11-01",
+    "source": "false-idol",
+    "title": "False Idol",
+    "start": "2026-11-01T22:00:00+00:00",
+    "end": null,
+    "location": "Drumsheds",
+    "price": null,
+    "url": null,
+    "image": null,
+    "status": "projected",
+    "links": {},
+    "description": "Projected — False Idol typically runs a large warehouse party around early November at Drumsheds (the ex-IKEA warehouse).",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "allDay": true,
+    "shortCode": "Bg"
+  }
+]

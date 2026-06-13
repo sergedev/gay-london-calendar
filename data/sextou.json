@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sextou-2026-07-04",
+    "source": "sextou",
+    "title": "Sextou Turns II - 2 Year Anniversary",
+    "start": "2026-07-04T18:00:00+01:00",
+    "end": "2026-07-05T06:00:00+01:00",
+    "location": "Number 90",
+    "price": null,
+    "url": "https://app.promotix.com/events/details/SEXTOU-TURNS-II---2-YEAR-ANNIVERSARY-tickets-2",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://app.promotix.com/events/details/SEXTOU-TURNS-II---2-YEAR-ANNIVERSARY-tickets-2"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "vu"
+  }
+]

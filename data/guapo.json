@@ -1,0 +1,25 @@
+[
+  {
+    "id": "guapo-2026-07-04",
+    "source": "guapo",
+    "title": "Guapo - Pride London",
+    "start": "2026-07-04T23:00:00+01:00",
+    "end": "2026-07-05T05:00:00+01:00",
+    "location": "Electric Brixton",
+    "price": null,
+    "url": "https://www.skiddle.com/whats-on/London/Electric-Brixton---London/Guapo---Pride-London-with-Special-Guest-Nina-Flowers/42265768/",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://www.skiddle.com/whats-on/London/Electric-Brixton---London/Guapo---Pride-London-with-Special-Guest-Nina-Flowers/42265768/"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party",
+      "pride"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "lP"
+  }
+]

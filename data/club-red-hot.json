@@ -1,0 +1,25 @@
+[
+  {
+    "id": "club-red-hot-2026-07-04",
+    "source": "club-red-hot",
+    "title": "Club Red Hot Pride",
+    "start": "2026-07-04T22:00:00+01:00",
+    "end": null,
+    "location": "HERE at Outernet",
+    "price": null,
+    "url": "https://dice.fm/event/6dke92-club-red-hot-pride-4th-jul-here-at-outernet-london-tickets",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://dice.fm/event/6dke92-club-red-hot-pride-4th-jul-here-at-outernet-london-tickets"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party",
+      "pride"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "kK"
+  }
+]

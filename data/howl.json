@@ -1,0 +1,26 @@
+[
+  {
+    "id": "howl-2026-07-04",
+    "source": "howl",
+    "title": "Howl Pride",
+    "start": "2026-07-04T22:00:00+01:00",
+    "end": null,
+    "location": "Hackney Wick",
+    "price": null,
+    "url": "https://howlworldwide.com/products/howl-pride-1",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://howlworldwide.com/products/howl-pride-1"
+    },
+    "description": "",
+    "soldOut": false,
+    "categories": [
+      "party",
+      "pride"
+    ],
+    "categoriesOverride": null,
+    "allDay": true,
+    "shortCode": "G2"
+  }
+]
