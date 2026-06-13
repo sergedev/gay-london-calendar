@@ -68,6 +68,25 @@ def og(page_html, key):
     return html.unescape(m.group(1)) if m else ''
 
 
+_MONTHS_RE = ('January|February|March|April|May|June|July|August|September'
+              '|October|November|December')
+
+
+def _strip_trailing_date(title):
+    """Drop a trailing date OutSavvy tacks onto the event name so the recurring
+    series reads cleanly. Handles both orders, optional year, and removes a
+    leftover ' -'/'–'/':' separator:
+        'InterBank Networking - 18 June'                 -> 'InterBank Networking'
+        'InterBank Networking - 19 February 2026'        -> 'InterBank Networking'
+        '... & LGBT+ History Month event - 19 Feb 2026'  -> '... & LGBT+ History Month event'
+    A themed suffix (anything that isn't the date) is preserved.
+    """
+    pat = (rf'\s*[-–:]?\s*(?:\d{{1,2}}(?:st|nd|rd|th)?\s+(?:{_MONTHS_RE})'
+           rf'|(?:{_MONTHS_RE})\s+\d{{1,2}}(?:st|nd|rd|th)?)'
+           rf'(?:,?\s+\d{{4}})?\s*$')
+    return re.sub(pat, '', title, flags=re.IGNORECASE).strip()
+
+
 def parse_outsavvy_event(url):
     html = curl(url)
     title_raw = og(html, 'title')
@@ -75,6 +94,7 @@ def parse_outsavvy_event(url):
     title = re.sub(r'\s+Tickets\s+-\s+[^-]+\s+-\s+OutSavvy\s*$', '', title_raw).strip()
     if not title:
         title = title_raw
+    title = _strip_trailing_date(title)
 
     description = og(html, 'description')
     image = og(html, 'image')

@@ -2,7 +2,7 @@
   {
     "id": "mighty-hoopla-2026-day1",
     "source": "mighty-hoopla",
-    "title": "Mighty Hoopla 2026 — Day 1",
+    "title": "Mighty Hoopla 2026 - Day 1",
     "start": "2026-05-30T12:00:00+01:00",
     "end": "2026-05-30T22:00:00+01:00",
     "location": "Brockwell Park",
@@ -13,10 +13,9 @@
     "links": {
       "tickets": "https://www.mightyhoopla.com/"
     },
-    "description": "Saturday of Mighty Hoopla — yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
+    "description": "Saturday of Mighty Hoopla - yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
     "soldOut": false,
     "categories": [
-      "social",
       "festival"
     ],
     "categoriesOverride": null,
@@ -25,7 +24,7 @@
   {
     "id": "mighty-hoopla-2026-day2",
     "source": "mighty-hoopla",
-    "title": "Mighty Hoopla 2026 — Day 2",
+    "title": "Mighty Hoopla 2026 - Day 2",
     "start": "2026-05-31T12:00:00+01:00",
     "end": "2026-05-31T22:00:00+01:00",
     "location": "Brockwell Park",
@@ -36,13 +35,56 @@
     "links": {
       "tickets": "https://www.mightyhoopla.com/"
     },
-    "description": "Sunday of Mighty Hoopla — yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
+    "description": "Sunday of Mighty Hoopla - yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
     "soldOut": false,
     "categories": [
-      "social",
       "festival"
     ],
     "categoriesOverride": null,
     "shortCode": "0Y"
+  },
+  {
+    "id": "mighty-hoopla-2027-day1",
+    "source": "mighty-hoopla",
+    "title": "Mighty Hoopla 2027 - Day 1",
+    "start": "2027-06-05T12:00:00+01:00",
+    "end": "2027-06-05T22:00:00+01:00",
+    "location": "Brockwell Park",
+    "price": null,
+    "url": "https://www.mightyhoopla.com/",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://www.mightyhoopla.com/"
+    },
+    "description": "Saturday of Mighty Hoopla - yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
+    "soldOut": false,
+    "categories": [
+      "festival"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "0O"
+  },
+  {
+    "id": "mighty-hoopla-2027-day2",
+    "source": "mighty-hoopla",
+    "title": "Mighty Hoopla 2027 - Day 2",
+    "start": "2027-06-06T12:00:00+01:00",
+    "end": "2027-06-06T22:00:00+01:00",
+    "location": "Brockwell Park",
+    "price": null,
+    "url": "https://www.mightyhoopla.com/",
+    "image": null,
+    "status": "confirmed",
+    "links": {
+      "tickets": "https://www.mightyhoopla.com/"
+    },
+    "description": "Sunday of Mighty Hoopla - yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
+    "soldOut": false,
+    "categories": [
+      "festival"
+    ],
+    "categoriesOverride": null,
+    "shortCode": "IH"
   }
 ]

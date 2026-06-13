@@ -30,7 +30,10 @@
     "color": "#0ea5e9",
     "logo": "./assets/logos/village-drinks.jpg",
     "letter": "V",
-    "description": "Monthly social networking evening for London's gay professionals. Venue revealed close to the event."
+    "description": "Monthly social networking evening for London's gay professionals. Venue revealed close to the event.",
+    "instagramFeaturedByTitle": {
+      "Village Drinks": "DYt8EkwMikP"
+    }
   },
   "lgbtq-london": {
     "name": "LGBTQ+ London",
@@ -54,16 +57,6 @@
     "letter": "Y",
     "description": "Meetup community of 7k+ LGBTQ+ professionals in London. Fortnightly drinks at The Yard Bar, Soho."
   },
-  "elephant-social-london": {
-    "name": "Elephant Social London",
-    "shortName": "Elephant Social",
-    "url": "https://www.instagram.com/elephant_social_london",
-    "instagram": "https://www.instagram.com/elephant_social_london",
-    "color": "#f43f5e",
-    "logo": "./assets/logos/elephant-social-london.jpg",
-    "letter": "E",
-    "description": "London's brand new social group for queer men. Monthly mixer last Friday of the month at Betty & Joan's (sometimes Four Quarters). Announced ad-hoc on Instagram."
-  },
   "elephant-park-pride": {
     "name": "Elephant Park Pride",
     "shortName": "Elephant Park Pride",
@@ -78,17 +71,6 @@
       "Elephant Park Pride 2026": "DM8EJcpKKOz"
     }
   },
-  "the-social-gays": {
-    "name": "The Social Gays",
-    "shortName": "Social Gays",
-    "url": "https://www.outsavvy.com/organiser/the-social-gays",
-    "website": "https://www.outsavvy.com/organiser/the-social-gays",
-    "instagram": "https://www.instagram.com/thesocialgays",
-    "color": "#dc2626",
-    "logo": "./assets/logos/the-social-gays.jpg",
-    "letter": "S",
-    "description": "Friendly mixer nights for gay men. Mostly Brighton — we only track the occasional London editions at the Two Brewers, Clapham."
-  },
   "interbank": {
     "name": "InterBank LGBT+ Network",
     "shortName": "InterBank",
@@ -98,7 +80,8 @@
     "color": "#1e40af",
     "logo": "./assets/logos/interbank.jpg",
     "letter": "I",
-    "description": "LGBT+ networking event for finance and banking professionals in London. Held on the 3rd Thursday of every month at 6pm, plus occasional themed specials."
+    "description": "LGBT+ networking event for finance and banking professionals in London. Held on the 3rd Thursday of every month at 6pm, plus occasional themed specials.",
+    "instagramFeatured": "DWRYhuHjbCL"
   },
   "jake": {
     "name": "JAKE",
@@ -120,7 +103,8 @@
     "color": "#06b6d4",
     "logo": "./assets/logos/gaymers-inc.jpg",
     "letter": "G",
-    "description": "London's LGBTQ+ gamers community. Main monthly meet-up every 3rd Wednesday at The Old School Yard (TOSY). Also runs board game nights, geek quizzes, and themed RPG takeovers."
+    "description": "London's LGBTQ+ gamers community. Main monthly meet-up every 3rd Wednesday at The Old School Yard (TOSY). Also runs board game nights, geek quizzes, and themed RPG takeovers.",
+    "instagramFeatured": "DTvJB9VFHvC"
   },
   "two-brewers": {
     "name": "The Two Brewers",
@@ -142,7 +126,8 @@
     "color": "#be185d",
     "logo": "./assets/logos/clapham-pride.jpg",
     "letter": "C",
-    "description": "Yearly LGBTQ+ Pride street party hosted by Arch Clapham on Voltaire Road. Free entry, drag performers, DJs and dancing into the night."
+    "description": "Yearly LGBTQ+ Pride street party hosted by Arch Clapham on Voltaire Road. Free entry, drag performers, DJs and dancing into the night.",
+    "instagramFeatured": "DLcstEBiZ45"
   },
   "pride-in-southwark": {
     "name": "Pride in Southwark",
@@ -156,16 +141,17 @@
     "description": "Yearly free community Pride festival at Mint Street Park, Southwark. Drag, live music, readings and community stalls."
   },
   "the-board-gays": {
-    "name": "The Board Gays",
-    "shortName": "Board Gays",
+    "name": "The BoardGays",
+    "shortName": "The BoardGays",
     "url": "https://www.instagram.com/theboardgays",
     "instagram": "https://www.instagram.com/theboardgays",
     "color": "#15803d",
     "logo": "./assets/logos/the-board-gays.jpg",
     "letter": "B",
-    "description": "LGBTQ+ community running four event series across board games, social-deduction games, cinema, and escape rooms — Boardgays, Wolfgays, Filmgays and Escapegays. All posted ad-hoc on Instagram.",
+    "description": "LGBTQ+ community running four event series across board games, social-deduction games, cinema, and escape rooms — The BoardGays, Wolfgays, Filmgays and Escapegays. All posted ad-hoc on Instagram.",
     "instagramFeaturedByTitle": {
-      "Boardgays": "DXC25kMDpT8"
+      "The BoardGays": "DZagLiBjjwC",
+      "Filmgays": "DXT9Sg0jFYC"
     }
   },
   "summer-gaymes": {
@@ -207,18 +193,27 @@
     "color": "#c026d3",
     "logo": "./assets/logos/mighty-hoopla.jpg",
     "letter": "M",
-    "description": "Yearly two-day pop and LGBTQ+ music festival at Brockwell Park."
+    "description": "Yearly two-day pop and LGBTQ+ music festival at Brockwell Park.",
+    "instagramFeaturedByTitle": {
+      "Mighty Hoopla 2026 - Day 1": "DY-uQnAuFQ-",
+      "Mighty Hoopla 2026 - Day 2": "DY-uQnAuFQ-",
+      "Mighty Hoopla 2027 - Day 1": "DY-uQnAuFQ-",
+      "Mighty Hoopla 2027 - Day 2": "DY-uQnAuFQ-"
+    }
   },
   "as-one-in-the-park": {
     "name": "As One In The Park",
     "shortName": "As One In The Park",
     "url": "https://www.asoneinthepark.co.uk/",
     "website": "https://www.asoneinthepark.co.uk/",
-    "instagram": "https://www.instagram.com/asoneinthepark/",
+    "instagram": "https://www.instagram.com/asonefestival/",
     "color": "#059669",
     "logo": "./assets/logos/as-one-in-the-park.jpg",
     "letter": "A",
-    "description": "Yearly LGBTQ+ music festival at Walpole Park, Ealing."
+    "description": "Yearly LGBTQ+ music festival at Walpole Park, Ealing.",
+    "instagramFeaturedByTitle": {
+      "As One In The Park 2026": "DNn9XoZNXD9"
+    }
   },
   "body-movement": {
     "name": "Body Movement",
@@ -229,17 +224,23 @@
     "color": "#6d28d9",
     "logo": "./assets/logos/body-movement.jpg",
     "letter": "B",
-    "description": "Yearly queer-focused electronic music and dance festival at Southwark Park."
+    "description": "Yearly queer-focused electronic music and dance festival at Southwark Park.",
+    "instagramFeaturedByTitle": {
+      "Body Movement 2026": "DVGKAf6AhYu"
+    }
   },
   "homobloc": {
     "name": "Homobloc",
     "shortName": "Homobloc",
-    "url": "https://www.homoblocfestival.com/",
-    "website": "https://www.homoblocfestival.com/",
+    "url": "https://www.homobloc.co.uk/",
+    "website": "https://www.homobloc.co.uk/",
     "instagram": "https://www.instagram.com/homobloc/",
     "color": "#facc15",
     "logo": "./assets/logos/homobloc.jpg",
     "letter": "H",
-    "description": "Yearly queer dance and music festival at Mayfield Depot in Manchester. Date TBC for 2026 — historically in November."
+    "description": "Yearly queer dance and music festival at Mayfield Depot in Manchester. Date TBC for 2026 — historically in November.",
+    "instagramFeaturedByTitle": {
+      "Homobloc 2026": "DSDN23cDTls"
+    }
   }
 }

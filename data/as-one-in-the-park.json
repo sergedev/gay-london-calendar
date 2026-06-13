@@ -8,7 +8,7 @@
     "location": "Walpole Park, Ealing",
     "price": null,
     "url": "https://www.asoneinthepark.co.uk/",
-    "image": null,
+    "image": "https://skiddle.imgix.net/festivals/1544_1779111951_fest.jpg?auto=format%2Ccompress&fit=crop&crop=faces%2Centropy&dpr=2",
     "status": "confirmed",
     "links": {
       "tickets": "https://www.asoneinthepark.co.uk/"
@@ -16,7 +16,6 @@
     "description": "Yearly LGBTQ+ music festival in Walpole Park, Ealing.",
     "soldOut": false,
     "categories": [
-      "social",
       "festival"
     ],
     "categoriesOverride": null,

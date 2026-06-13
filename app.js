@@ -17,6 +17,28 @@ const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTHS_AHEAD = 3;  // months rendered at once in month view
 
+// England & Wales bank holidays (London). Source: gov.uk/bank-holidays.json.
+// Keyed YYYY-MM-DD → short label. Extend each year as gov.uk publishes them.
+const BANK_HOLIDAYS = {
+  '2026-01-01': "New Year's Day",
+  '2026-04-03': 'Good Friday',
+  '2026-04-06': 'Easter Monday',
+  '2026-05-04': 'Early May bank holiday',
+  '2026-05-25': 'Spring bank holiday',
+  '2026-08-31': 'Summer bank holiday',
+  '2026-12-25': 'Christmas Day',
+  '2026-12-28': 'Boxing Day',
+  '2027-01-01': "New Year's Day",
+  '2027-03-26': 'Good Friday',
+  '2027-03-29': 'Easter Monday',
+  '2027-05-03': 'Early May bank holiday',
+  '2027-05-31': 'Spring bank holiday',
+  '2027-08-30': 'Summer bank holiday',
+  '2027-12-27': 'Christmas Day',
+  '2027-12-28': 'Boxing Day',
+};
+function bankHoliday(d) { return BANK_HOLIDAYS[dateKey(d)] || null; }
+
 // ---------- State ----------
 const STATE = {
   view: 'auto',
@@ -835,7 +857,34 @@ function renderList() {
       </div>`
     : '';
 
-  if (!visibleEvents.length) {
+  const byDay = new Map();
+  for (const ev of visibleEvents) {
+    const k = dateKey(new Date(ev.start));
+    if (!byDay.has(k)) byDay.set(k, []);
+    byDay.get(k).push(ev);
+  }
+
+  // Bank-holiday day markers: when browsing (no active filters), a bank
+  // holiday with no events on it still gets a row so the day shows up in the
+  // list. Skipped in shared/favorites/filtered views, where the list is a
+  // curated event set, not a calendar to browse.
+  const browsing = !sharedMode && !STATE.filters.favoritesOnly && !STATE.filters.sharedOnly
+    && STATE.filters.categories.size === 0 && STATE.filters.sources.size === 0;
+  const bankHolDays = new Map();  // dateKey -> name, only for days with no events
+  if (browsing) {
+    const winStart = startOfMonth(STATE.month);
+    const winEnd = addMonths(winStart, STATE.monthsLoaded);  // exclusive
+    for (const [dk, name] of Object.entries(BANK_HOLIDAYS)) {
+      const [yy, mm, dd] = dk.split('-').map(Number);
+      const bd = new Date(yy, mm - 1, dd);
+      if (bd < winStart || bd >= winEnd) continue;
+      if (!STATE.showPastEvents && startOfDay(bd) < today) continue;
+      if (byDay.has(dk)) continue;  // real events already render this day
+      bankHolDays.set(dk, name);
+    }
+  }
+
+  if (!visibleEvents.length && bankHolDays.size === 0) {
     const scopeLabel = sharedMode ? 'in this shared selection' : 'this month';
     const emptyBody = baseEvents.length > 0
       ? `<p class="text-base">No upcoming events ${scopeLabel}.</p>
@@ -850,13 +899,7 @@ function renderList() {
       ${canLoadMore ? '<div data-month-sentinel class="h-1"></div>' : ''}
     `;
   }
-  const byDay = new Map();
-  for (const ev of visibleEvents) {
-    const k = dateKey(new Date(ev.start));
-    if (!byDay.has(k)) byDay.set(k, []);
-    byDay.get(k).push(ev);
-  }
-  const days = [...byDay.keys()].sort();
+  const days = [...new Set([...byDay.keys(), ...bankHolDays.keys()])].sort();
   let prevYear = null;
   let prevMonth = null;
   return `
@@ -899,7 +942,8 @@ function renderList() {
               ${fmtDayHeader(date)}
             </h2>
             <div class="mt-2 space-y-1 ${isPast && !isToday ? 'opacity-50 saturate-50' : ''}">
-              ${byDay.get(k).map(renderListCard).join('')}
+              ${bankHolDays.has(k) ? renderBankHolidayCard(bankHolDays.get(k)) : ''}
+              ${(byDay.get(k) || []).map(renderListCard).join('')}
             </div>
           </section>
         `;
@@ -1121,6 +1165,20 @@ function renderFavBtn(ev, padding = 'p-1.5') {
   `;
 }
 
+// Day-level marker shown in the list when a bank holiday lands on a day with
+// no events. Not a clickable event — a muted amber banner stating the day.
+function renderBankHolidayCard(name) {
+  return `
+    <div class="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3.5 sm:p-4 text-amber-800">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <div>
+        <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 leading-none">Bank holiday</div>
+        <div class="mt-1 font-semibold leading-snug">${escapeHtml(name)}</div>
+      </div>
+    </div>
+  `;
+}
+
 function renderListCard(ev) {
   const start = new Date(ev.start);
   const cats = effectiveCategories(ev);
@@ -1220,6 +1278,7 @@ function renderCalCell(d, today, startMonth, endMonth, i) {
   const isToday = isSameDay(d, today);
   const isPast = startOfDay(d) < startOfDay(today);
   const isFirstOfMonth = d.getDate() === 1;
+  const bankHol = bankHoliday(d);
   const events = eventsForDay(d);
   const visible = events.slice(0, 6);
   const overflow = events.length - visible.length;
@@ -1239,6 +1298,7 @@ function renderCalCell(d, today, startMonth, endMonth, i) {
 
   const cellBg = isToday ? 'bg-slate-50'
     : isOutsideRange ? 'bg-slate-50/40'
+    : (bankHol && !isPast) ? 'bg-amber-50'
     : (isPast) ? 'bg-slate-100/60'
     : '';
   const cellRing = isToday ? 'ring-2 ring-inset ring-slate-900 relative z-10' : '';
@@ -1265,6 +1325,9 @@ function renderCalCell(d, today, startMonth, endMonth, i) {
         </div>
         ${events.length > 0 && !isOutsideRange ? `<span class="text-[10px] font-semibold ${isToday ? 'text-slate-700' : 'text-slate-400'} mt-2">${events.length} event${events.length === 1 ? '' : 's'}</span>` : ''}
       </div>
+      ${bankHol && !isOutsideRange ? `
+        <div class="w-full text-center text-[11px] font-bold uppercase tracking-wider text-amber-700 leading-tight ${isPast ? 'opacity-50' : ''}" title="${escapeHtml(bankHol)}">Bank holiday</div>
+      ` : ''}
       ${!isOutsideRange ? `
         <div class="flex flex-col gap-0.5 ${eventsDimmed}">
           ${visible.map(renderMonthCellEvent).join('')}
@@ -1293,22 +1356,27 @@ function renderMonthCellEvent(ev) {
     : `group w-full text-left rounded-md hover:bg-slate-100 transition px-1.5 py-1${sharedBg}`;
   const timeClass = projected ? 'text-slate-400' : 'text-slate-600';
   const titleClass = projected ? 'italic text-slate-500' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
-  // Right-side tag priority: favorited star > TBC > SOLD OUT > FREE
+  // Right-side cluster: status tag + favorited star coexist (tag first, star
+  // last). Earlier versions showed only one, so a sold-out favorited event
+  // hid its SOLD OUT badge behind the star.
   const favStarTag = isFav
-    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="#facc15" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-auto flex-shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="#facc15" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
     : '';
   const rightTag = projected
-    ? '<span class="text-[9.5px] font-bold text-slate-400 tracking-wide ml-auto">TBC</span>'
+    ? '<span class="text-[9.5px] font-bold text-slate-400 tracking-wide">TBC</span>'
     : soldOut
-    ? '<span class="text-[9.5px] font-bold text-rose-600 tracking-wide ml-auto">SOLD OUT</span>'
-    : (free ? '<span class="text-[9.5px] font-bold text-emerald-600 tracking-wide ml-auto">FREE</span>' : '');
+    ? '<span class="text-[9.5px] font-bold text-rose-600 tracking-wide">SOLD OUT</span>'
+    : (free ? '<span class="text-[9.5px] font-bold text-emerald-600 tracking-wide">FREE</span>' : '');
+  const rightCluster = (rightTag || favStarTag)
+    ? `<span class="ml-auto flex items-center gap-1 flex-shrink-0">${rightTag}${favStarTag}</span>`
+    : '';
   return `
     <button data-action="open-event" data-id="${ev.id}"
       class="${wrapClass}">
       <div class="flex items-center gap-1.5 leading-none">
         ${renderSourceAvatar(ev.source, 13)}
         <span class="text-[10.5px] font-semibold ${timeClass} tracking-tight whitespace-nowrap">${fmtTime(start)}</span>
-        ${favStarTag || rightTag}
+        ${rightCluster}
       </div>
       <div class="mt-1 text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${escapeHtml(ev.title)}</div>
       ${loc ? `
@@ -1397,18 +1465,22 @@ function renderMiniMonthCell(d, monthStart, today) {
   const isPast = startOfDay(d) < startOfDay(today);
   const events = eventsForDay(d);
   const hasEvents = events.length > 0;
-  const cat = hasEvents ? primaryCategory(events[0]) : null;
   const dayText = isToday
     ? 'text-white font-bold'
     : isPast ? 'text-slate-300 font-medium'
     : hasEvents ? 'text-slate-900 font-semibold'
     : 'text-slate-500';
   const bg = isToday ? 'bg-slate-900' : '';
+  // One dot per event (capped at 9), each coloured by its own category.
+  // Wraps 3-per-row, centred, under the day number — so a busy day reads as a
+  // little cluster (e.g. 5 events → a row of 3 then a centred row of 2).
+  const dots = events.slice(0, 9).map(ev =>
+    `<span class="cat-${primaryCategory(ev)} cat-stripe w-1 h-1 rounded-full"></span>`).join('');
   return `
     <button data-action="open-day" data-date="${dateKey(d)}"
-      class="aspect-square rounded-md flex flex-col items-center justify-center text-[11px] hover:bg-slate-100 relative transition ${dayText} ${bg}">
+      class="aspect-square rounded-md flex flex-col items-center justify-center gap-0.5 text-[11px] hover:bg-slate-100 transition ${dayText} ${bg}">
       <span class="leading-none">${d.getDate()}</span>
-      ${hasEvents && !isToday ? `<span class="cat-${cat} cat-stripe absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"></span>` : ''}
+      ${hasEvents ? `<span class="flex flex-wrap justify-center gap-[1.5px] max-w-[15px] leading-none">${dots}</span>` : ''}
     </button>
   `;
 }
@@ -1422,6 +1494,11 @@ function renderEventDrawer(id) {
   const cats = effectiveCategories(ev);
   const src = STATE.sources[ev.source];
   const loc = displayLocation(ev.location);
+  // Drawer-only fallback: when displayLocation() yields nothing, surface the
+  // event's `locationNote` (e.g. "Location revealed closer to the day"). The
+  // calendar/list views deliberately never render this — it's a per-event
+  // hint shown only when the user opens the drawer.
+  const drawerLoc = loc || (ev.locationNote ? String(ev.locationNote).trim() : '');
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
   const links = getLinks(ev);
@@ -1467,10 +1544,10 @@ function renderEventDrawer(id) {
               <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               <span>${fmtDayHeader(start)} · ${fmtTime(start)}${end ? ' – ' + fmtTime(end) : ''}</span>
             </div>
-            ${loc ? `
+            ${drawerLoc ? `
               <div class="flex items-start gap-2">
                 <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                <span>${escapeHtml(loc)}</span>
+                <span>${escapeHtml(drawerLoc)}</span>
               </div>
             ` : ''}
             ${ev.price && !projected ? `
@@ -1513,12 +1590,13 @@ function renderEventDrawer(id) {
             </div>
           ` : ''}
           ${(() => {
-            // Curated Instagram post embed, opted-in per source via
-            // `instagramFeaturedByTitle: { "<title>": "<post-id>" }`.
-            // Carousels (multi-photo posts) and reels both work through
-            // the same /p/<id>/ URL — the embed widget handles paging
-            // through carousel images inline.
-            const postId = src?.instagramFeaturedByTitle?.[ev.title];
+            // Curated Instagram post embed, opted-in per source via either
+            // `instagramFeaturedByTitle: { "<title>": "<post-id>" }` (per-event)
+            // or `instagramFeatured: "<post-id>"` (one post for every event of
+            // the source — use this when event titles vary month to month).
+            // The per-title map wins when both are set. Carousels and reels
+            // both work via the same /p/<id>/ URL.
+            const postId = src?.instagramFeaturedByTitle?.[ev.title] || src?.instagramFeatured;
             if (!postId) return '';
             const permalink = `https://www.instagram.com/p/${postId}/`;
             return `

@@ -8,7 +8,7 @@
     "location": "Southwark Park",
     "price": null,
     "url": "https://bodymovements.co.uk/",
-    "image": null,
+    "image": "https://djmag.com/sites/default/files/styles/djm_23_1005x565/public/2026-02/bodymovements.jpg.webp?itok=6JMMV-7v",
     "status": "confirmed",
     "links": {
       "tickets": "https://bodymovements.co.uk/"
@@ -16,7 +16,6 @@
     "description": "Yearly queer-focused electronic music and dance festival at Southwark Park.",
     "soldOut": false,
     "categories": [
-      "social",
       "festival"
     ],
     "categoriesOverride": null,

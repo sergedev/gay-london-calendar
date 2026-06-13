@@ -13,7 +13,7 @@ Rule of thumb when adding a new field:
 
 AUTHORITATIVE_FIELDS = frozenset({
     'source', 'id',
-    'title', 'start', 'end', 'location',
+    'title', 'start', 'end', 'location', 'locationNote',
     'price', 'soldOut',
     'attendees', 'attendeeLimit',
     'url', 'image', 'links',

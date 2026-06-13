@@ -34,7 +34,7 @@ PROJECTION_MONTHS = 4  # months ahead to project (beyond any confirmed listings)
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
 SOURCE_WEBSITE = 'https://www.villagedrinks.com/'
-DEFAULT_LOCATION = 'Location revealed close to the event'
+LOCATION_NOTE = 'Location revealed closer to the day'  # drawer-only fallback
 PROJECTED_START_TIME = '18:30:00+01:00'  # matches the historic Village Drinks slot
 PROJECTED_END_TIME = '23:30:00+01:00'
 DESC_CONFIRMED = 'Meaningful connections. Hundreds of like-minded guys, in one special venue.'
@@ -88,17 +88,6 @@ def parse_event_jsonld(url):
     return None
 
 
-def _first_image(v):
-    """JSON-LD image can be a string, list, or ImageObject. Return a URL or None."""
-    if isinstance(v, str):
-        return v
-    if isinstance(v, list) and v:
-        return _first_image(v[0])
-    if isinstance(v, dict):
-        return v.get('url')
-    return None
-
-
 def confirmed_from_jsonld(data, url):
     title = data.get('name', 'Village Drinks')
     # Strip the long subtitle Village Drinks attaches in Eventbrite titles
@@ -111,21 +100,24 @@ def confirmed_from_jsonld(data, url):
     sold_out = False
     offers = data.get('offers')
     if isinstance(offers, list) and offers:
-        low = offers[0].get('lowPrice')
-        cur = offers[0].get('priceCurrency', 'GBP')
-        if low is not None:
+        o = offers[0]
+        # Village Drinks runs tiered Eventbrite pricing (early bird → student →
+        # standard → last chance) that shifts through the month. We always show
+        # the top of the AggregateOffer range (highPrice) so the figure on the
+        # calendar reflects the dearest active tier; fall back to low/price.
+        amount = o.get('highPrice') or o.get('lowPrice') or o.get('price')
+        cur = o.get('priceCurrency', 'GBP')
+        if amount is not None:
             sym = '£' if cur == 'GBP' else f'{cur} '
             try:
-                f = float(low)
+                f = float(amount)
                 price = f'{sym}{f:.2f}' if f != int(f) else f'{sym}{int(f)}'
             except Exception:
-                price = f'{sym}{low}'
-        elif offers[0].get('price'):
-            price = f"£{offers[0]['price']}"
-        avail = (offers[0].get('availability') or '').lower()
+                price = f'{sym}{amount}'
+        avail = (o.get('availability') or '').lower()
         sold_out = 'soldout' in avail or 'outofstock' in avail
 
-    location = DEFAULT_LOCATION
+    location = None
     place = data.get('location') or {}
     if isinstance(place, dict):
         name = (place.get('name') or '').strip()
@@ -139,9 +131,12 @@ def confirmed_from_jsonld(data, url):
         'start': start,
         'end': end,
         'location': location,
+        'locationNote': None if location else LOCATION_NOTE,
         'price': price,
         'url': url,
-        'image': _first_image(data.get('image')),
+        # NOTE: image is intentionally omitted. Banner images are set by hand
+        # (the Eventbrite JSON-LD image is often a poor crop), so we don't emit
+        # 'image' here — merge_preserving_custom then keeps the on-disk value.
         'status': 'confirmed',
         'recurrence': 'last-thursday-monthly',
         'links': {'tickets': url},
@@ -169,7 +164,8 @@ def projection(year, month):
         'title': 'Village Drinks',
         'start': f'{iso}T{PROJECTED_START_TIME}',
         'end': f'{iso}T{PROJECTED_END_TIME}',
-        'location': DEFAULT_LOCATION,
+        'location': None,
+        'locationNote': LOCATION_NOTE,
         'price': None,
         'url': SOURCE_WEBSITE,
         'status': 'projected',

@@ -7,16 +7,15 @@
     "end": "2026-09-27T00:00:00+01:00",
     "location": "Manchester",
     "price": null,
-    "url": "https://www.homoblocfestival.com/",
-    "image": null,
+    "url": "https://www.homobloc.co.uk/",
+    "image": "https://www.homobloc.co.uk/images_2026/hero_image.jpg?v=2",
     "status": "confirmed",
     "links": {
-      "tickets": "https://www.homoblocfestival.com/"
+      "tickets": "https://www.homobloc.co.uk/"
     },
     "description": "Yearly queer dance and music festival in Manchester.",
     "soldOut": false,
     "categories": [
-      "social",
       "festival"
     ],
     "categoriesOverride": null,
