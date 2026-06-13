@@ -115,7 +115,10 @@
     "color": "#92400e",
     "logo": "./assets/logos/two-brewers.jpg",
     "letter": "T",
-    "description": "Iconic LGBTQ+ pub and cabaret venue in Clapham. Yearly Street Party in June plus a packed nightly programme of drag and dance."
+    "description": "Iconic LGBTQ+ pub and cabaret venue in Clapham. Yearly Street Party in June plus a packed nightly programme of drag and dance.",
+    "instagramFeaturedByTitle": {
+      "The Two Brewers Street Party": "DLfY0IeNiX9"
+    }
   },
   "clapham-pride": {
     "name": "Clapham Pride",
@@ -127,7 +130,7 @@
     "logo": "./assets/logos/clapham-pride.jpg",
     "letter": "C",
     "description": "Yearly LGBTQ+ Pride street party hosted by Arch Clapham on Voltaire Road. Free entry, drag performers, DJs and dancing into the night.",
-    "instagramFeatured": "DLcstEBiZ45"
+    "instagramFeatured": "DLhkwHJIoY5"
   },
   "pride-in-southwark": {
     "name": "Pride in Southwark",
@@ -242,5 +245,12 @@
     "instagramFeaturedByTitle": {
       "Homobloc 2026": "DSDN23cDTls"
     }
+  },
+  "world-prides": {
+    "name": "Pride Around the World",
+    "shortName": "World Prides",
+    "color": "#9333ea",
+    "letter": "P",
+    "description": "Major Pride celebrations across the UK and Europe — a heads-up for anyone planning to travel."
   }
 }

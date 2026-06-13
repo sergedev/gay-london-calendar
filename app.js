@@ -1183,7 +1183,7 @@ function renderListCard(ev) {
   const start = new Date(ev.start);
   const cats = effectiveCategories(ev);
   const src = STATE.sources[ev.source];
-  const loc = displayLocation(ev.location);
+  const loc = eventLocation(ev);
   const free = isFreeEvent(ev);
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
@@ -1200,29 +1200,37 @@ function renderListCard(ev) {
         ? '<span class="ml-1 text-emerald-600 font-bold tracking-wide">FREE</span>'
         : `<span class="text-slate-300">·</span><span class="text-slate-500 font-medium">${escapeHtml(ev.price)}</span>`) : '');
   const titleClass = projected ? 'italic text-slate-600' : (soldOut ? 'font-light text-slate-400' : 'font-light text-slate-900');
-  return `
-    <div class="relative">
-      <button data-action="open-event" data-id="${ev.id}"
-        class="${wrapClass}">
-        <div class="flex items-center gap-2 text-xs pr-9">
+  const locRow = loc ? `
+    <div class="mt-1 flex items-center gap-1 text-sm text-slate-500">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      <span class="truncate">${escapeHtml(loc)}</span>
+    </div>
+  ` : '';
+  // Minimal events (e.g. world Prides): drop the meta row (avatar / organiser /
+  // time / price) and category chips, leaving just title + location. The
+  // favourite button is positioned separately, so it still shows.
+  const body = ev.minimal
+    ? `<div class="${titleClass} leading-snug line-clamp-2 pr-9">${eventTitle(ev)}</div>
+       ${locRow}`
+    : `<div class="flex items-center gap-2 text-xs pr-9">
           ${renderSourceAvatar(ev.source, 18)}
           <span class="font-semibold" style="color:${src?.color || '#475569'}">${escapeHtml(src?.shortName || ev.source)}</span>
           <span class="text-slate-300">·</span>
-          <span class="font-semibold ${projected ? 'text-slate-500' : 'text-slate-900'}">${fmtTime(start)}</span>
+          <span class="font-semibold ${projected ? 'text-slate-500' : 'text-slate-900'}">${eventTimeLabel(ev)}</span>
           ${priceChunk}
         </div>
-        <div class="mt-1.5 ${titleClass} leading-snug line-clamp-2 pr-9">${escapeHtml(ev.title)}</div>
-        ${loc ? `
-          <div class="mt-1 flex items-center gap-1 text-sm text-slate-500">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span class="truncate">${escapeHtml(loc)}</span>
-          </div>
-        ` : ''}
+        <div class="mt-1.5 ${titleClass} leading-snug line-clamp-2 pr-9">${eventTitle(ev)}</div>
+        ${locRow}
         ${cats.length ? `
           <div class="mt-2 flex flex-wrap gap-1">
             ${cats.map(c => `<span class="cat-${c} cat-chip text-[10.5px] px-2 py-0.5 rounded-full font-medium capitalize">${c}</span>`).join('')}
           </div>
-        ` : ''}
+        ` : ''}`;
+  return `
+    <div class="relative">
+      <button data-action="open-event" data-id="${ev.id}"
+        class="${wrapClass}">
+        ${body}
       </button>
       ${ev.shortCode ? `
         <div class="absolute top-2 right-2">${renderFavBtn(ev)}</div>
@@ -1344,7 +1352,7 @@ function renderCalCell(d, today, startMonth, endMonth, i) {
 
 function renderMonthCellEvent(ev) {
   const start = new Date(ev.start);
-  const loc = displayLocation(ev.location);
+  const loc = eventLocation(ev);
   const free = isFreeEvent(ev);
   const projected = isProjected(ev);
   const soldOut = isSoldOut(ev);
@@ -1370,21 +1378,33 @@ function renderMonthCellEvent(ev) {
   const rightCluster = (rightTag || favStarTag)
     ? `<span class="ml-auto flex items-center gap-1 flex-shrink-0">${rightTag}${favStarTag}</span>`
     : '';
+  const locRow = loc ? `
+    <div class="mt-0.5 flex items-center gap-0.5 text-[10px] text-slate-500 leading-none">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      <span class="truncate">${escapeHtml(loc)}</span>
+    </div>
+  ` : '';
+  // Minimal events (e.g. world Prides) drop the meta row entirely — no
+  // organiser avatar, no time/All-day, no status tag — leaving just the
+  // title and location.
+  if (ev.minimal) {
+    return `
+      <button data-action="open-event" data-id="${ev.id}" class="${wrapClass}">
+        <div class="text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${eventTitle(ev)}</div>
+        ${locRow}
+      </button>
+    `;
+  }
   return `
     <button data-action="open-event" data-id="${ev.id}"
       class="${wrapClass}">
       <div class="flex items-center gap-1.5 leading-none">
         ${renderSourceAvatar(ev.source, 13)}
-        <span class="text-[10.5px] font-semibold ${timeClass} tracking-tight whitespace-nowrap">${fmtTime(start)}</span>
+        <span class="text-[10.5px] font-semibold ${timeClass} tracking-tight whitespace-nowrap">${eventTimeLabel(ev)}</span>
         ${rightCluster}
       </div>
-      <div class="mt-1 text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${escapeHtml(ev.title)}</div>
-      ${loc ? `
-        <div class="mt-0.5 flex items-center gap-0.5 text-[10px] text-slate-500 leading-none">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span class="truncate">${escapeHtml(loc)}</span>
-        </div>
-      ` : ''}
+      <div class="mt-1 text-[11.5px] ${titleClass} leading-tight line-clamp-2 group-hover:underline">${eventTitle(ev)}</div>
+      ${locRow}
     </button>
   `;
 }
@@ -1493,8 +1513,8 @@ function renderEventDrawer(id) {
   const end = ev.end ? new Date(ev.end) : null;
   const cats = effectiveCategories(ev);
   const src = STATE.sources[ev.source];
-  const loc = displayLocation(ev.location);
-  // Drawer-only fallback: when displayLocation() yields nothing, surface the
+  const loc = eventLocation(ev);
+  // Drawer-only fallback: when eventLocation() yields nothing, surface the
   // event's `locationNote` (e.g. "Location revealed closer to the day"). The
   // calendar/list views deliberately never render this — it's a per-event
   // hint shown only when the user opens the drawer.
@@ -1534,7 +1554,7 @@ function renderEventDrawer(id) {
         </div>
         <div class="px-5 py-5">
           <div class="flex items-start gap-2">
-            <h2 class="text-xl font-semibold leading-tight flex-1 ${projected ? 'italic text-slate-700' : (soldOut ? 'text-slate-500' : '')}">${escapeHtml(ev.title)}</h2>
+            <h2 class="text-xl font-semibold leading-tight flex-1 ${projected ? 'italic text-slate-700' : (soldOut ? 'text-slate-500' : '')}">${eventTitle(ev)}</h2>
             ${projected ? '<span class="text-[10px] font-bold tracking-wider uppercase text-slate-500 bg-slate-100 border border-dashed border-slate-300 px-2 py-1 rounded-md whitespace-nowrap">Projected</span>'
               : soldOut ? '<span class="text-[10px] font-bold tracking-wider uppercase text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-md whitespace-nowrap">Sold out</span>'
               : ''}
@@ -1542,7 +1562,7 @@ function renderEventDrawer(id) {
           <div class="mt-3 space-y-1.5 text-sm text-slate-600">
             <div class="flex items-start gap-2">
               <svg class="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              <span>${fmtDayHeader(start)} · ${fmtTime(start)}${end ? ' – ' + fmtTime(end) : ''}</span>
+              <span>${fmtDayHeader(start)}${ev.allDay ? ' · All day' : ` · ${fmtTime(start)}${end ? ' – ' + fmtTime(end) : ''}`}</span>
             </div>
             ${drawerLoc ? `
               <div class="flex items-start gap-2">
@@ -1785,6 +1805,34 @@ function handleAction(e) {
 // ---------- Utils ----------
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch]));
+}
+
+// Pride-flag palette, applied per letter to the word "Pride". Yellow is
+// darkened so it stays legible on white.
+const PRIDE_COLORS = ['#e40303', '#ff8c00', '#dcaa00', '#008026', '#004dff', '#750787'];
+// Render an event's title as HTML. Events that opt in with `rainbow: true`
+// get the standalone word "Pride" rainbow-ised per letter (case preserved);
+// every other event renders plain. Returns HTML — callers must NOT re-escape.
+function eventTitle(ev) {
+  const esc = escapeHtml(ev.title);
+  if (!ev.rainbow) return esc;
+  return esc.replace(/\bpride\b/gi, word =>
+    `<span class="font-bold">${[...word].map((ch, i) =>
+      `<span style="color:${PRIDE_COLORS[i % PRIDE_COLORS.length]}">${ch}</span>`).join('')}</span>`
+  );
+}
+
+// Location to display. `forceLocation` bypasses the generic-name filter so a
+// destination event keeps its city even when it's "London" (which the filter
+// otherwise drops as redundant on a London calendar).
+function eventLocation(ev) {
+  if (ev.forceLocation) return (ev.location || '').trim();
+  return displayLocation(ev.location);
+}
+// Time label for the meta rows. `allDay` events (e.g. the world Prides, whose
+// exact start time we don't track) show "All day" instead of a fabricated clock.
+function eventTimeLabel(ev) {
+  return ev.allDay ? 'All day' : fmtTime(new Date(ev.start));
 }
 // Returns the location to show, or '' if it's generic / unknown
 function displayLocation(loc) {

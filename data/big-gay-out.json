@@ -118,7 +118,7 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 20,
+    "attendees": 21,
     "shortCode": "RY"
   },
   {
@@ -177,7 +177,7 @@
     ],
     "categoriesOverride": null,
     "shortCode": "XK",
-    "attendees": 23,
+    "attendees": 24,
     "soldOut": false,
     "image": "https://d2oi1rqwb0pj00.cloudfront.net/community-images/folderItem/common/nio_1781000841133_507f1242-d70c-48a9-91e6-46282c75f08a_GV"
   },
@@ -216,7 +216,7 @@
     "categoriesOverride": null,
     "soldOut": false,
     "attendeeLimit": 50,
-    "attendees": 33,
+    "attendees": 34,
     "shortCode": "TK"
   },
   {
@@ -235,7 +235,7 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 17,
+    "attendees": 19,
     "shortCode": "Om"
   },
   {
@@ -254,7 +254,7 @@
     ],
     "categoriesOverride": null,
     "soldOut": false,
-    "attendees": 14,
+    "attendees": 15,
     "shortCode": "zI"
   },
   {

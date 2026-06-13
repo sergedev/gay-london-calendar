@@ -8,7 +8,7 @@
     "location": "Arch Clapham, Voltaire Road",
     "price": "Free",
     "url": "https://archclapham.co.uk/clapham-pride-2026-at-arch/",
-    "image": "https://archclapham.co.uk/wp-content/uploads/2026/04/clapham-pride-2026-at-arch-00012.webp",
+    "image": "./assets/event-images/clapham-pride-2026.png",
     "status": "confirmed",
     "links": {
       "website": "https://archclapham.co.uk/clapham-pride-2026-at-arch/"
